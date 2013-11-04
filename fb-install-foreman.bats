@@ -31,17 +31,24 @@ setup() {
   fi
 }
 
-@test "stup puppet agent if running" {
-  if tIsRHEL 6; then
-    service puppet stop; chkconfig puppet off
-  elif tIsFedora; then
-    service puppetagent stop; chkconfig puppetgent off
-  fi
-}
+if tPackageExists "puppet"; then
+  @test "stop puppet agent (if installed)" {
+    if tIsRHEL 6; then
+      service puppet stop; chkconfig puppet off
+    elif tIsFedora; then
+      service puppetagent stop; chkconfig puppetgent off
+    fi
+    true
+  }
 
-@test "clean after puppet" {
-  rm -rf /var/lib/puppet/ssl
-}
+  @test "clean after puppet (if installed)" {
+    [[ -d /var/lib/puppet/ssl ]] && rm -rf /var/lib/puppet/ssl
+  }
+
+  @test "make sure puppet not configured to other pm" {
+    sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf
+  }
+fi
 
 if tIsRHEL 6; then
   @test "enable epel" {
