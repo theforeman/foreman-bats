@@ -22,6 +22,14 @@ tIsFedora() {
   fi
 }
 
+tPackageExists() {
+  if tIsRedHatCompatible; then
+    rpm -q "$1" >/dev/null
+  else
+    false # not implemented
+  fi
+}
+
 tCommandExists() {
   type -p "$1" >/dev/null
 }

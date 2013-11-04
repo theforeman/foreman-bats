@@ -1,8 +1,8 @@
 # vim: ft=sh:sw=2:et
 
 tForemanSetupUrl() {
-  [ -f /etc/redhat-release ] && OSNV=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
-  [ -f /etc/fedora-release ] && OSNV=$(rpm -q --queryformat '%{VERSION}' fedora-release)
+  [ -f /etc/redhat-release ] && OSNV=el$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
+  [ -f /etc/fedora-release ] && OSNV=f$(rpm -q --queryformat '%{VERSION}' fedora-release)
   FOREMAN_URL=${FOREMAN_URL:-http://yum.theforeman.org/$FOREMAN_VERSION/$OSNV/x86_64/foreman-release.rpm}
 }
 

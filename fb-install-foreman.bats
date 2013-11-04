@@ -33,24 +33,26 @@ setup() {
 
 if tIsRHEL 6; then
   @test "enable epel" {
-    run rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+    EPEL_REL="6-8"
+    tPackageExists epel-release-$EPEL_REL || \
+      rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-$EPEL_REL.noarch.rpm
   }
 fi
 
 @test "download and install release package" {
-  run yum -y install $FOREMAN_URL
+  yum -y install $FOREMAN_URL
 }
 
 @test "install installer" {
-  run yum -y install foreman-installer
+  yum -y install foreman-installer
 }
 
 @test "run the installer" {
-  run foreman-installer --foreman-repo $FOREMAN_REPO --foreman-proxy-repo $FOREMAN_REPO --no-colors -v
+  foreman-installer --foreman-repo $FOREMAN_REPO --foreman-proxy-repo $FOREMAN_REPO --no-colors -v
 }
 
 @test "run the installer once again" {
-  run foreman-installer --no-colors -v
+  foreman-installer --no-colors -v
 }
 
 @test "wait a 10 seconds" {
@@ -58,19 +60,19 @@ fi
 }
 
 @test "check web app is up" {
-  run "curl -sk https://localhost$URL_PREFIX/users/login | grep -q login-form"
+  "curl -sk https://localhost$URL_PREFIX/users/login | grep -q login-form"
 }
 
 @test "wake up puppet agent" {
-  run puppet agent -t -v
+  puppet agent -t -v
 }
 
 @test "install all compute resources" {
-  run yum -y install foreman-console foreman-libvirt foreman-vmware foreman-ovirt
+  yum -y install foreman-console foreman-libvirt foreman-vmware foreman-ovirt
 }
 
 @test "restart httpd server" {
-  run service httpd restart
+  service httpd restart
 }
 
 @test "collect important logs" {
