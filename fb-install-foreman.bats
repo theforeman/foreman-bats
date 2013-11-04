@@ -31,6 +31,14 @@ setup() {
   fi
 }
 
+@test "stup puppet agent if running" {
+  if tIsRHEL 6; then
+    service puppet stop || true
+  elif tIsFedora
+    service puppetagent stop || true
+  fi
+}
+
 if tIsRHEL 6; then
   @test "enable epel" {
     EPEL_REL="6-8"
