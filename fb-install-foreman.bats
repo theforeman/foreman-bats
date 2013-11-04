@@ -33,10 +33,14 @@ setup() {
 
 @test "stup puppet agent if running" {
   if tIsRHEL 6; then
-    service puppet stop || true
+    service puppet stop; chkconfig puppet off
   elif tIsFedora; then
-    service puppetagent stop || true
+    service puppetagent stop; chkconfig puppetgent off
   fi
+}
+
+@test "clean after puppet" {
+  rm -rf /var/lib/puppet/ssl
 }
 
 if tIsRHEL 6; then
