@@ -34,7 +34,7 @@ setup() {
 @test "stup puppet agent if running" {
   if tIsRHEL 6; then
     service puppet stop || true
-  elif tIsFedora
+  elif tIsFedora; then
     service puppetagent stop || true
   fi
 }
