@@ -46,7 +46,7 @@ if tPackageExists "puppet"; then
   }
 
   @test "make sure puppet not configured to other pm" {
-    sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf
+    sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf || true
   }
 fi
 
