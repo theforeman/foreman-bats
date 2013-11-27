@@ -4,12 +4,23 @@ tIsRedHatCompatible() {
   [[ -f /etc/redhat-release ]]
 }
 
+tIsCentOS() {
+  [[ -f /etc/centos-release ]]
+}
+
 tIsRHEL() {
-  if [ -z "$1" ]; then
-    [[ -f /etc/redhat-release && ! -f /etc/fedora-release ]]
+  if [[ -f /etc/redhat-release && ! -f /etc/fedora-release ]]; then
+    if [ -z "$1" ]; then
+      true
+    else
+      if tIsCentOS; then
+        [[ "$1" -eq "$(rpm -q --queryformat '%{VERSION}' centos-release)" ]]
+      else
+        [[ "$1" -eq "$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')" ]]
+      fi
+    fi
   else
-    [[ -f /etc/redhat-release && ! -f /etc/fedora-release && \
-      "$1" -eq "$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')" ]]
+    false
   fi
 }
 

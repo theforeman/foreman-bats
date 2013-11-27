@@ -19,3 +19,7 @@ BATS installation and cli end-to-end testing scripts for Foreman project
 
     10 tests, 0 failures
 
+There is also a helper script that automates git installation and installation
+of BATS and Foreman BATS:
+
+    curl --silent https://raw.github.com/lzap/foreman-bats/master/bootstrap.sh | bash /dev/stdin

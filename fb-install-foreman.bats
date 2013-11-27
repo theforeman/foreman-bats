@@ -59,11 +59,11 @@ if tIsRHEL 6; then
 fi
 
 @test "download and install release package" {
-  yum -y install $FOREMAN_URL
+  rpm -q foreman-release || yum -y install $FOREMAN_URL
 }
 
 @test "install installer" {
-  yum -y install foreman-installer
+  rpm -q foreman-installer || yum -y install foreman-installer
 }
 
 @test "run the installer" {
