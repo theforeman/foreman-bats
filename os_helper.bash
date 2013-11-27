@@ -4,32 +4,42 @@ tIsRedHatCompatible() {
   [[ -f /etc/redhat-release ]]
 }
 
-tIsCentOS() {
+tIsCentOSCompatible() {
   [[ -f /etc/centos-release ]]
 }
 
-tIsRHEL() {
-  if [[ -f /etc/redhat-release && ! -f /etc/fedora-release ]]; then
-    if [ -z "$1" ]; then
-      true
-    else
-      if tIsCentOS; then
-        [[ "$1" -eq "$(rpm -q --queryformat '%{VERSION}' centos-release)" ]]
-      else
-        [[ "$1" -eq "$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')" ]]
-      fi
+tIsFedoraCompatible() {
+  [[ -f /etc/redhat-release && -f /etc/fedora-release ]]
+}
+
+tSetOSVersion() {
+  if [[ -z "$OS_VERSION" ]]; then
+    if tIsCentOSCompatible; then
+      OS_VERSION=$(rpm -q --queryformat '%{VERSION}' centos-release)
+    elif tIsRedHatCompatible; then
+      OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
+    elif tIsFedoraCompatible; then
+      OS_VERSION=$(rpm -q --queryformat '%{VERSION}' fedora-release)
     fi
-  else
-    false
   fi
 }
 
 tIsFedora() {
   if [ -z "$1" ]; then
-    [[ -f /etc/redhat-release && -f /etc/fedora-release ]]
+    tIsFedoraCompatible
   else
-    [[ -f /etc/redhat-release && -f /etc/fedora-release && \
-      "$1" -eq "$(rpm -q --queryformat '%{VERSION}' fedora-release)" ]]
+    tSetOSVersion
+    tIsFedoraCompatible && [[ "$1" -eq "$OS_VERSION" ]]
+  fi
+}
+
+
+tIsRHEL() {
+  if [ -z "$1" ]; then
+    tIsRedHatCompatible
+  else
+    tSetOSVersion
+    tIsRedHatCompatible && [[ "$1" -eq "$OS_VERSION" ]]
   fi
 }
 
