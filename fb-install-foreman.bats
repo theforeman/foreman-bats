@@ -74,12 +74,12 @@ fi
   foreman-installer --no-colors -v
 }
 
-@test "wait a 10 seconds" {
+@test "wait 10 seconds" {
   sleep 10
 }
 
 @test "check web app is up" {
-  "curl -sk https://localhost$URL_PREFIX/users/login | grep -q login-form"
+  curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
 }
 
 @test "wake up puppet agent" {
@@ -87,11 +87,13 @@ fi
 }
 
 @test "install all compute resources" {
-  yum -y install foreman-console foreman-libvirt foreman-vmware foreman-ovirt
+  packages="foreman-console foreman-libvirt foreman-vmware foreman-ovirt"
+  yum info foreman-gce >/dev/null 2>&1 && packages="$packages foreman-gce"
+  yum -y install $packages
 }
 
-@test "restart httpd server" {
-  service httpd restart
+@test "restart foreman" {
+  service foreman restart
 }
 
 @test "collect important logs" {
