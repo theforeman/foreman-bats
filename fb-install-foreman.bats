@@ -42,7 +42,7 @@ if tPackageExists "puppet"; then
   }
 
   @test "clean after puppet (if installed)" {
-    [[ -d /var/lib/puppet/ssl ]] && rm -rf /var/lib/puppet/ssl
+    [[ -d /var/lib/puppet/ssl ]] && rm -rf /var/lib/puppet/ssl || true
   }
 
   @test "make sure puppet not configured to other pm" {
