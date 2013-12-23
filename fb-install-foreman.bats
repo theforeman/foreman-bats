@@ -36,7 +36,7 @@ if tPackageExists "puppet"; then
     if tIsRHEL 6; then
       service puppet stop; chkconfig puppet off
     elif tIsFedora; then
-      service puppetagent stop; chkconfig puppetgent off
+      service puppetagent stop; chkconfig puppetagent off
     fi
     true
   }
