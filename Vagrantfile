@@ -1,7 +1,7 @@
 # vim: sw=2:ts=2:et:ft=ruby
 
 Vagrant.configure("2") do |config|
-  config.vm.hostname = "foreman-#{ENV['os']}.example.com"
+  config.vm.hostname = "foreman-#{ENV['os'] || 'el6'}.example.com"
 
   config.vm.provider :libvirt do |p, override|
     override.vm.box = case ENV['os']
@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :rackspace do |p, override|
     override.vm.box = 'dummy'
-    p.server_name = "foreman-#{ENV['os']}.example.com"
+    p.server_name = "foreman-#{ENV['os'] || 'el6'}.example.com"
     p.flavor = /1GB/
     p.image  = case ENV['os']
                when 'precise'
