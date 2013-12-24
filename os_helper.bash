@@ -68,7 +68,7 @@ tPackageExists() {
   if tIsRedHatCompatible; then
     rpm -q "$1" >/dev/null
   elif tIsDebianCompatible; then
-    dpkg -l "$1" >/dev/null
+    dpkg -s "$1" >/dev/null
   else
     false # not implemented
   fi

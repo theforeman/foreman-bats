@@ -28,6 +28,8 @@ setup() {
       service iptables stop; chkconfig iptables off
     fi
   fi
+
+  tPackageExists curl || tPackageInstall curl
 }
 
 @test "stop puppet agent (if installed)" {
