@@ -12,7 +12,8 @@ setup() {
 
   if tIsFedora 19; then
     # missing service file in puppet
-    cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
+    tPackageExists "puppet" && \
+      cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
 
     # puppet selinux is a mess
     setenforce 0

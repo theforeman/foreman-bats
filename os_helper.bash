@@ -24,10 +24,10 @@ tSetOSVersion() {
   if [[ -z "$OS_VERSION" ]]; then
     if tIsCentOSCompatible; then
       OS_VERSION=$(rpm -q --queryformat '%{VERSION}' centos-release)
-    elif tIsRedHatCompatible; then
-      OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
     elif tIsFedoraCompatible; then
       OS_VERSION=$(rpm -q --queryformat '%{VERSION}' fedora-release)
+    elif tIsRedHatCompatible; then
+      OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
     elif tIsUbuntuCompatible; then
       OS_VERSION=$(. /etc/os-release; echo $VERSION_ID)
       OS_RELEASE=$(lsb_release -cs)
