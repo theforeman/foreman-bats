@@ -30,7 +30,7 @@ foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
     vagrant up
        # or...
     os=wheezy vagrant up
-    vagrant ssh -c 'sudo /usr/local/bin/fb-install-foreman.bats'
+    vagrant ssh -c 'sudo /vagrant/fb-install-foreman.bats'
 
 When using fb-install-foreman.bats, the following environment variables can be
 specified:
