@@ -88,7 +88,37 @@ EOF
 }
 
 @test "install installer" {
-  tPackageExists foreman-installer || tPackageInstall foreman-installer
+  if [[ -n $FOREMAN_INSTALLER_PATH ]] ; then
+    # Install build dependencies
+    if tIsRedHatCompatible ; then
+      tPackageExists ruby-devel || tPackageInstall ruby-devel
+      tPackageExists gcc || tPackageInstall gcc
+      tCommandExists bundle || tPackageInstall bundler || ((tCommandExists gem || tPackageInstall rubygems) && gem install bundler)
+      tCommandExists rake || tPackageInstall rubygem-rake
+      tPackageExists asciidoc || tPackageInstall asciidoc
+    elif tIsDebianCompatible ; then
+      tPackageExists ruby-dev || tPackageInstall ruby-dev
+      tPackageExists build-essential || tPackageInstall build-essential
+      tPackageExists bundler || tPackageInstall bundler
+      tPackageExists rake || tPackageInstall rake
+      tPackageExists asciidoc || tPackageInstall asciidoc
+    else
+      false  # Unsupported
+    fi
+
+    pushd $FOREMAN_INSTALLER_PATH
+
+    if [[ -f Gemfile ]] ; then
+      bundle install
+    fi
+
+    rake build PREFIX=/usr SYSCONFDIR=/etc VERSION=$(git describe)
+    rake install PREFIX=/usr SYSCONFDIR=/etc VERSION=$(git describe)
+
+    popd
+  else
+    tPackageExists foreman-installer || tPackageInstall foreman-installer
+  fi
 }
 
 @test "run the installer" {
