@@ -24,14 +24,6 @@ of BATS and Foreman BATS:
 
     curl --silent https://raw.github.com/theforeman/foreman-bats/master/bootstrap.sh | bash /dev/stdin
 
-A Vagrantfile is supplied with multi-OS support.  This will transfer
-foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
-
-    vagrant up
-       # or...
-    os=wheezy vagrant up
-    vagrant ssh -c 'sudo /vagrant/fb-install-foreman.bats'
-
 When using fb-install-foreman.bats, the following environment variables can be
 specified:
 
@@ -39,3 +31,15 @@ specified:
   or component under deb.tf.org (1.3, nightly) to use as Foreman repo
 * FOREMAN_CUSTOM_URL: custom repo URL to configure, overrides use of
   FOREMAN_REPO for the main Foreman URL
+
+Vagrant support
+---------------
+
+A Vagrantfile is supplied with multi-OS support.  This will transfer
+foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
+
+    vagrant up
+    vagrant ssh -c 'sudo /vagrant/fb-install-foreman.bats'
+       # or...
+    vagrant up wheezy
+    vagrant ssh wheezy -c 'sudo /vagrant/fb-install-foreman.bats'
