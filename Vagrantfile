@@ -2,20 +2,22 @@
 
 Vagrant.configure("2") do |config|
   config.vm.hostname = "foreman-#{ENV['os'] || 'el6'}.example.com"
+  config.vm.box = ENV['box']
 
   config.vm.provider :libvirt do |p, override|
-    override.vm.box = case ENV['os']
+    override.vm.box = ENV['box'] || case ENV['os']
                       when 'precise'
-                        'ubuntu-server-12042-x64-kvm-2'
+                        'ubuntu1204'
                       when 'squeeze'
-                        'debian-607-x64-kvm-3'
+                        'debian6'
                       when 'wheezy'
-                        'debian-710-x64-kvm-2'
+                        'debian7'
                       when 'f19'
-                        'fedora-19-x64'
+                        'fedora19'
                       else
-                        'centos-64-x64-kvm-2'
+                        'centos64'
                       end
+    override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{override.vm.box}.box"
     p.memory = 1024
   end
 
@@ -23,7 +25,7 @@ Vagrant.configure("2") do |config|
     override.vm.box = 'dummy'
     p.server_name = "foreman-#{ENV['os'] || 'el6'}.example.com"
     p.flavor = /1GB/
-    p.image  = case ENV['os']
+    p.image  = ENV['box'] || case ENV['os']
                when 'precise'
                  /Ubuntu.*12\.04/
                when 'squeeze'
