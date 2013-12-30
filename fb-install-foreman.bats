@@ -6,14 +6,14 @@ load foreman_helper
 
 setup() {
   URL_PREFIX=""
-  FOREMAN_VERSION=${FOREMAN_VERSION:-nightly}
   FOREMAN_REPO=${FOREMAN_REPO:-nightly}
   tForemanSetupUrl
   tForemanSetLang
 
   if tIsFedora 19; then
     # missing service file in puppet
-    cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
+    tPackageExists "puppet" && \
+      cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
 
     # puppet selinux is a mess
     setenforce 0
@@ -29,57 +29,82 @@ setup() {
       service iptables stop; chkconfig iptables off
     fi
   fi
+
+  tPackageExists curl || tPackageInstall curl
 }
 
-if tPackageExists "puppet"; then
-  @test "stop puppet agent (if installed)" {
-    if tIsRHEL 6; then
-      service puppet stop; chkconfig puppet off
-    elif tIsFedora; then
-      service puppetagent stop; chkconfig puppetgent off
+@test "stop puppet agent (if installed)" {
+  tPackageExists "puppet" || skip "Puppet package not installed"
+  if tIsRHEL 6; then
+    service puppet stop; chkconfig puppet off
+  elif tIsFedora; then
+    service puppetagent stop; chkconfig puppetagent off
+  elif tIsDebianCompatible; then
+    service puppet stop
+  fi
+  true
+}
+
+@test "clean after puppet (if installed)" {
+  [[ -d /var/lib/puppet/ssl ]] || skip "Puppet not installed, or SSL directory doesn't exist"
+  rm -rf /var/lib/puppet/ssl
+}
+
+@test "make sure puppet not configured to other pm" {
+  egrep -q "server\s*=" /etc/puppet/puppet.conf || skip "Puppet not installed, or 'server' not configured"
+  sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf
+}
+
+@test "enable epel" {
+  tIsRHEL || skip "EPEL not required on this operating system"
+  tIsRHEL 6 || skip "EPEL not supported on this operating system"
+  EPEL_REL="6-8"
+  tPackageExists epel-release-$EPEL_REL || \
+    rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-$EPEL_REL.noarch.rpm
+}
+
+@test "configure repository" {
+  if tIsRedHatCompatible; then
+    rpm -q foreman-release || yum -y install $FOREMAN_URL
+
+    if [ -n "$FOREMAN_CUSTOM_URL" ]; then
+      cat > /etc/yum.repos.d/foreman-custom.repo <<EOF
+[foreman-custom]
+name=foreman-custom
+enabled=1
+gpgcheck=0
+baseurl=${FOREMAN_CUSTOM_URL}
+EOF
+      yum-config-manager --disable foreman >/dev/null
     fi
-    true
-  }
-
-  @test "clean after puppet (if installed)" {
-    [[ -d /var/lib/puppet/ssl ]] && rm -rf /var/lib/puppet/ssl
-  }
-
-  @test "make sure puppet not configured to other pm" {
-    sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf || true
-  }
-fi
-
-if tIsRHEL 6; then
-  @test "enable epel" {
-    EPEL_REL="6-8"
-    tPackageExists epel-release-$EPEL_REL || \
-      rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-$EPEL_REL.noarch.rpm
-  }
-fi
-
-@test "download and install release package" {
-  rpm -q foreman-release || yum -y install $FOREMAN_URL
+  elif tIsDebianCompatible; then
+    tSetOSVersion
+    echo "deb http://deb.theforeman.org/ ${OS_RELEASE} ${FOREMAN_REPO}" > /etc/apt/sources.list.d/foreman.list
+    wget -q http://deb.theforeman.org/foreman.asc -O- | apt-key add -
+    apt-get update
+  else
+    skip "Unknown operating system"
+  fi
 }
 
 @test "install installer" {
-  rpm -q foreman-installer || yum -y install foreman-installer
+  tPackageExists foreman-installer || tPackageInstall foreman-installer
 }
 
 @test "run the installer" {
-  foreman-installer --foreman-repo $FOREMAN_REPO --foreman-proxy-repo $FOREMAN_REPO --no-colors -v
+  foreman-installer --no-colors -v
 }
 
 @test "run the installer once again" {
   foreman-installer --no-colors -v
 }
 
-@test "wait a 10 seconds" {
+@test "wait 10 seconds" {
   sleep 10
 }
 
 @test "check web app is up" {
-  "curl -sk https://localhost$URL_PREFIX/users/login | grep -q login-form"
+  curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
 }
 
 @test "wake up puppet agent" {
@@ -87,13 +112,15 @@ fi
 }
 
 @test "install all compute resources" {
-  yum -y install foreman-console foreman-libvirt foreman-vmware foreman-ovirt
+  packages="foreman-console foreman-libvirt foreman-vmware foreman-ovirt"
+  yum info foreman-gce >/dev/null 2>&1 && packages="$packages foreman-gce"
+  tPackageInstall $packages
 }
 
-@test "restart httpd server" {
-  service httpd restart
+@test "restart foreman" {
+  touch ~foreman/tmp/restart.txt
 }
 
 @test "collect important logs" {
-  tail -n100 /var/log/httpd/*_log /var/log/foreman{-proxy,}/*log /var/log/messages > /root/last_logs || true
+  tail -n100 /var/log/{apache2,httpd}/*_log /var/log/foreman{-proxy,}/*log /var/log/messages > /root/last_logs || true
 }
