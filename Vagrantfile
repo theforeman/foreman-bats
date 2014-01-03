@@ -1,43 +1,37 @@
 # vim: sw=2:ts=2:et:ft=ruby
 
+boxes = [
+  {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :rackspace => /Ubuntu.*12\.04/},
+  {:name => 'squeeze',  :libvirt => 'fm-debian6',    :rackspace => /Debian.*6/},
+  {:name => 'wheezy',   :libvirt => 'fm-debian7',    :rackspace => /Debian.*7/},
+  {:name => 'f19',      :libvirt => 'fm-fedora19',   :rackspace => /Fedora.*19/},
+  {:name => 'f20',      :libvirt => 'fm-fedora20',   :rackspace => /Fedora.*20/},
+  {:name => 'el6',      :libvirt => 'fm-centos64',   :rackspace => /CentOS.*6\.4/, :default => true},
+]
+
+if ENV['box']
+  boxes << {:name => ENV['box'], :libvirt => ENV['box'], :rackspace => ENV['box']}
+end
+
 Vagrant.configure("2") do |config|
-  config.vm.hostname = "foreman-#{ENV['os'] || 'el6'}.example.com"
-  config.vm.box = ENV['box']
+  boxes.each do |box|
+    config.vm.define box[:name], primary: box[:default] do |machine|
+      machine.vm.box = box[:name]
+      machine.vm.hostname = "foreman-#{box[:name]}.example.com"
+      machine.vm.provision :shell, :path => 'bootstrap_vagrant.sh'
 
-  config.vm.provider :libvirt do |p, override|
-    override.vm.box = ENV['box'] || case ENV['os']
-                      when 'precise'
-                        'ubuntu1204'
-                      when 'squeeze'
-                        'debian6'
-                      when 'wheezy'
-                        'debian7'
-                      when 'f19'
-                        'fedora19'
-                      else
-                        'centos64'
-                      end
-    override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{override.vm.box}.box"
-    p.memory = 1024
+      machine.vm.provider :libvirt do |p, override|
+        override.vm.box = "#{box[:libvirt]}"
+        override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{box[:libvirt].sub(/^fm-/, '')}.box"
+        p.memory = 1024
+      end
+
+      machine.vm.provider :rackspace do |p, override|
+        override.vm.box = 'dummy'
+        p.server_name = machine.vm.hostname
+        p.flavor = /1GB/
+        p.image = box[:rackspace]
+      end
+    end
   end
-
-  config.vm.provider :rackspace do |p, override|
-    override.vm.box = 'dummy'
-    p.server_name = "foreman-#{ENV['os'] || 'el6'}.example.com"
-    p.flavor = /1GB/
-    p.image  = ENV['box'] || case ENV['os']
-               when 'precise'
-                 /Ubuntu.*12\.04/
-               when 'squeeze'
-                 /Debian.*6/
-               when 'wheezy'
-                 /Debian.*7/
-               when 'f19'
-                 /Fedora.*19/
-               else
-                 /CentOS.*6\.4/
-               end
-  end
-
-  config.vm.provision :shell, :path => 'bootstrap_vagrant.sh'
 end
