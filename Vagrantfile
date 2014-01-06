@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
         p.server_name = machine.vm.hostname
         p.flavor = /1GB/
         p.image = box[:rackspace]
+        override.ssh.pty = true
       end
     end
   end
