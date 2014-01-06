@@ -31,6 +31,8 @@ specified:
   or component under deb.tf.org (1.3, nightly) to use as Foreman repo
 * FOREMAN_CUSTOM_URL: custom repo URL to configure, overrides use of
   FOREMAN_REPO for the main Foreman URL
+* FOREMAN_INSTALLER_PATH: Path of the foreman-installer to be used instead of
+  the foreman-installer package from foreman repository.
 
 Vagrant support
 ---------------
@@ -43,3 +45,9 @@ foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
        # or...
     vagrant up wheezy
     vagrant ssh wheezy -c 'sudo /vagrant/fb-install-foreman.bats'
+
+It can also be used to test a local installer:
+
+    git clone --recursive https://github.com/theforeman/foreman-installer -b develop
+    vagrant up el6
+    vagrant ssh el6 -c 'sudo FOREMAN_INSTALLER_PATH=/vagrant/foreman-installer /vagrant/fb-install-foreman.bats'
