@@ -94,6 +94,16 @@ tPackageUpgrade() {
   fi
 }
 
+tPackageVersion() {
+  if tIsRedHatCompatible; then
+    rpm -q --qf "%{VERSION}\n" "$1"
+  elif tIsDebianCompatible; then
+    dpkg -s "$1" | awk '/^Version:/ { print $2 }'
+  else
+    false # not implemented
+  fi
+}
+
 tCommandExists() {
   type -p "$1" >/dev/null
 }
