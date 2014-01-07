@@ -34,6 +34,9 @@ setup() {
   fi
 
   tPackageExists curl || tPackageInstall curl
+  if tIsRedHatCompatible; then
+    tPackageExists yum-utils || tPackageInstall yum-utils
+  fi
 }
 
 @test "stop puppet agent (if installed)" {
@@ -78,7 +81,7 @@ enabled=1
 gpgcheck=0
 baseurl=${FOREMAN_CUSTOM_URL}
 EOF
-      yum-config-manager --disable foreman >/dev/null
+      yum-config-manager --disable foreman
     fi
   elif tIsDebianCompatible; then
     tSetOSVersion
