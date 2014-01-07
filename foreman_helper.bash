@@ -14,3 +14,13 @@ tForemanSetLang() {
   export LANG=en_US.UTF-8
   export LC_ALL=en_US.UTF-8
 }
+
+tForemanVersion() {
+  (
+    if tPackageExists foreman; then
+      tPackageVersion foreman
+    elif tPackageExists foreman-installer; then
+      tPackageVersion foreman-installer
+    fi
+  ) | cut -d. -f1-2
+}

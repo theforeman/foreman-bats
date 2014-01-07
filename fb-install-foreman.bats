@@ -1,6 +1,8 @@
 #!/usr/bin/env bats
 # vim: ft=sh:sw=2:et
 
+set -o pipefail
+
 load os_helper
 load foreman_helper
 
@@ -9,6 +11,7 @@ setup() {
   FOREMAN_REPO=${FOREMAN_REPO:-nightly}
   tForemanSetupUrl
   tForemanSetLang
+  FOREMAN_VERSION=$(tForemanVersion)
 
   if tIsFedora 19; then
     # missing service file in puppet
@@ -88,7 +91,8 @@ EOF
 }
 
 @test "install installer" {
-  tPackageExists foreman-installer || tPackageInstall foreman-installer
+  tPackageExists foreman-installer || tPackageInstall foreman-installer || return $?
+  FOREMAN_VERSION=$(tPackageVersion foreman-installer | cut -d. -f1-2)
 }
 
 @test "run the installer" {
@@ -119,6 +123,22 @@ EOF
 
 @test "restart foreman" {
   touch ~foreman/tmp/restart.txt
+}
+
+@test "install CLI (hammer)" {
+  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
+  tPackageInstall foreman-cli
+}
+
+@test "check smart proxy is registered" {
+  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
+  count=$(hammer --csv proxy list | wc -l)
+  [ $count -gt 1 ]
+}
+
+@test "check host is registered" {
+  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
+  hammer host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
 }
 
 @test "collect important logs" {
