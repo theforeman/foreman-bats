@@ -31,6 +31,7 @@ specified:
   or component under deb.tf.org (1.3, nightly) to use as Foreman repo
 * FOREMAN_CUSTOM_URL: custom repo URL to configure, overrides use of
   FOREMAN_REPO for the main Foreman URL
+* MODULE_PATH: override the location of modules used for installation.
 
 Vagrant support
 ---------------
@@ -43,3 +44,12 @@ foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
        # or...
     vagrant up wheezy
     vagrant ssh wheezy -c 'sudo /vagrant/fb-install-foreman.bats'
+
+It is also possible to test a different set of modules on all supported
+platforms:
+
+    git clone --recursive https://github.com/theforeman/foreman-installer local
+    vagrant up
+    for vm in precise squeeze wheezy f19 el6 ; do
+        vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
+    fi
