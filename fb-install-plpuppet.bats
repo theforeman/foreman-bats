@@ -20,10 +20,10 @@ load os_helper
   fi
 }
 
-@test "install puppet package" {
+@test "upgrade puppet package" {
   if tPackageExists puppet; then
     tPackageUpgrade puppet\* facter\*
   else
-    tPackageInstall puppet
+    skip "Puppet not currently installed"
   fi
 }
