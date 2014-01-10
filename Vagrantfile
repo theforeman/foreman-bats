@@ -4,9 +4,9 @@ boxes = [
   {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :rackspace => /Ubuntu.*12\.04/},
   {:name => 'squeeze',  :libvirt => 'fm-debian6',    :rackspace => /Debian.*6/},
   {:name => 'wheezy',   :libvirt => 'fm-debian7',    :rackspace => /Debian.*7/},
-  {:name => 'f19',      :libvirt => 'fm-fedora19',   :rackspace => /Fedora.*19/},
-  {:name => 'f20',      :libvirt => 'fm-fedora20',   :rackspace => /Fedora.*20/},
-  {:name => 'el6',      :libvirt => 'fm-centos64',   :rackspace => /CentOS.*6\.4/, :default => true},
+  {:name => 'f19',      :libvirt => 'fm-fedora19',   :rackspace => /Fedora.*19/, :pty => true},
+  {:name => 'f20',      :libvirt => 'fm-fedora20',   :rackspace => /Fedora.*20/, :pty => true},
+  {:name => 'el6',      :libvirt => 'fm-centos64',   :rackspace => /CentOS.*6\.4/, :default => true, :pty => true},
 ]
 
 if ENV['box']
@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
         p.server_name = machine.vm.hostname
         p.flavor = /1GB/
         p.image = box[:rackspace]
-        override.ssh.pty = true
+        override.ssh.pty = true if box[:pty]
       end
     end
   end
