@@ -99,7 +99,9 @@ EOF
 
   # Work around http://projects.theforeman.org/issues/3950
   if [ -n "$MODULE_PATH" ] ; then
-    ruby -ryaml - /etc/foreman/foreman-installer.yaml "$MODULE_PATH" <<EOF
+    install_conf=/etc/foreman/foreman-installer.yaml
+    [ -e /usr/share/foreman-installer/config/foreman-installer.yaml ] && install_conf=/usr/share/foreman-installer/config/foreman-installer.yaml
+    ruby -ryaml - $install_conf "$MODULE_PATH" <<EOF
 data = YAML::load(File.open(ARGV[0]))
 data[:module_dir] = ARGV[1]
 data[:modules_dir] = ARGV[1]
