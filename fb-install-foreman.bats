@@ -96,6 +96,16 @@ EOF
 @test "install installer" {
   tPackageExists foreman-installer || tPackageInstall foreman-installer || return $?
   FOREMAN_VERSION=$(tPackageVersion foreman-installer | cut -d. -f1-2)
+
+  # Work around http://projects.theforeman.org/issues/3950
+  if [ -n "$MODULE_PATH" ] ; then
+    ruby -ryaml - /etc/foreman/foreman-installer.yaml "$MODULE_PATH" <<EOF
+data = YAML::load(File.open(ARGV[0]))
+data[:module_dir] = ARGV[1]
+data[:modules_dir] = ARGV[1]
+File.write(ARGV[0], data.to_yaml)
+EOF
+  fi
 }
 
 @test "run the installer" {
