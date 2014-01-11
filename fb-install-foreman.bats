@@ -7,6 +7,10 @@ load os_helper
 load foreman_helper
 
 setup() {
+  if tIsDebianCompatible; then
+    tPackageExists lsb-release || tPackageInstall lsb-release
+  fi
+
   URL_PREFIX=""
   FOREMAN_REPO=${FOREMAN_REPO:-nightly}
   tForemanSetupUrl
