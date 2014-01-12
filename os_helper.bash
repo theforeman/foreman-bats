@@ -29,9 +29,11 @@ tSetOSVersion() {
     elif tIsRedHatCompatible; then
       OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
     elif tIsUbuntuCompatible; then
+      tPackageExists lsb-release || tPackageInstall lsb-release
       OS_VERSION=$(. /etc/os-release; echo $VERSION_ID)
       OS_RELEASE=$(lsb_release -cs)
     elif tIsDebianCompatible; then
+      tPackageExists lsb-release || tPackageInstall lsb-release
       OS_VERSION=$(cut -d. -f1 /etc/debian_version)
       OS_RELEASE=$(lsb_release -cs)
     fi
