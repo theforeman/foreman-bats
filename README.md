@@ -52,4 +52,4 @@ platforms:
     vagrant up
     for vm in precise squeeze wheezy f19 el6 ; do
         vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
-    fi
+    done
