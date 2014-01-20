@@ -158,7 +158,7 @@ EOF
 
 @test "collect important logs" {
   tail -n100 /var/log/{apache2,httpd}/*_log /var/log/foreman{-proxy,}/*log /var/log/messages > /root/last_logs || true
-  foreman-debug -d /root/foreman-debug || true
+  foreman-debug -q -d /root/foreman-debug || true
   if tIsRedHatCompatible; then
     tPackageExists sos || tPackageInstall sos
     sosreport --batch --tmp-dir=/root || true
