@@ -22,12 +22,11 @@ tIsUbuntuCompatible() {
 
 tSetOSVersion() {
   if [[ -z "$OS_VERSION" ]]; then
-    if tIsCentOSCompatible; then
-      OS_VERSION=$(rpm -q --queryformat '%{VERSION}' centos-release)
-    elif tIsFedoraCompatible; then
+    if tIsFedoraCompatible; then
       OS_VERSION=$(rpm -q --queryformat '%{VERSION}' fedora-release)
     elif tIsRedHatCompatible; then
-      OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' redhat-release-server | awk -F. '{print $1}')
+      _PKG=$(rpm -qa '(redhat|sl|centos|oraclelinux)-release(|-server|-workstation|-client|-computenode)')
+      OS_VERSION=$(rpm -q --queryformat '%{RELEASE}' $_PKG | awk -F. '{print $1}')
     elif tIsUbuntuCompatible; then
       tPackageExists lsb-release || tPackageInstall lsb-release
       OS_VERSION=$(. /etc/os-release; echo $VERSION_ID)
