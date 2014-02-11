@@ -86,6 +86,7 @@ EOF
   elif tIsDebianCompatible; then
     tSetOSVersion
     echo "deb http://deb.theforeman.org/ ${OS_RELEASE} ${FOREMAN_REPO}" > /etc/apt/sources.list.d/foreman.list
+    echo "deb http://deb.theforeman.org/ plugins main" >> /etc/apt/sources.list.d/foreman.list
     wget -q http://deb.theforeman.org/foreman.asc -O- | apt-key add -
     apt-get update
   else
