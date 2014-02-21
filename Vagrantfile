@@ -6,7 +6,7 @@ boxes = [
   {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => /Debian.*7/,      :os_user => 'debian'},
   {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => /Fedora.*19/, :pty => true},
   {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => /Fedora.*20/, :pty => true},
-  {:name => 'el6',      :libvirt => 'fm-centos65',   :image_name => /CentOS 6\.5/, :default => true, :pty => true},
+  {:name => 'el6',      :libvirt => 'fm-centos64',   :image_name => /CentOS.*6\.4/, :default => true, :pty => true},
 ]
 
 if ENV['box']
