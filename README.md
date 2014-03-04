@@ -72,6 +72,21 @@ following parameters:
 
 * `OVIRT_RELEASE`: version to install specified as simple number (33, 34, 35)
 
+Libvirt support
+---------------
+
+It is possible to configure Compute Resource within Foreman against libvirt
+running on localhost. The `fb-setup-libvirt.bats` can be used to install
+necessary bits (libvirt), configure them and associate required resources in
+Foreman. This script must be executed after `fb-install-foreman.bats`.
+
+To use nested KVM you only need to do this on the *host* machine:
+
+    echo 'options kvm-intel nested=1' | sudo tee /etc/modprobe.d/kvm-intel.conf
+
+You can either restart your host machine, or `modprobe kvm-intel` and
+restarting libvirtd daemon.
+
 Vagrant support
 ---------------
 
