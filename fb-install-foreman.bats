@@ -133,8 +133,12 @@ EOF
 
 @test "install all compute resources" {
   packages="foreman-console foreman-libvirt foreman-vmware foreman-ovirt"
-  yum info foreman-gce >/dev/null 2>&1 && packages="$packages foreman-gce"
+  tPackageAvailable foreman-gce && packages="$packages foreman-gce"
   tPackageInstall $packages
+}
+
+@test "check web app is still up" {
+  curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
 }
 
 @test "restart foreman" {
