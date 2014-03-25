@@ -65,6 +65,16 @@ tIsUbuntu() {
   tIsUbuntuCompatible
 }
 
+tPackageAvailable() {
+  if tIsRedHatCompatible; then
+    yum info "$1" >/dev/null 2>&1
+  elif tIsDebianCompatible; then
+    apt-cache show "$1" >/dev/null 2>&1
+  else
+    false # not implemented
+  fi
+}
+
 tPackageExists() {
   if tIsRedHatCompatible; then
     rpm -q "$1" >/dev/null
@@ -77,9 +87,9 @@ tPackageExists() {
 
 tPackageInstall() {
   if tIsRedHatCompatible; then
-    yum -y install "$1"
+    yum -y install $*
   elif tIsDebianCompatible; then
-    apt-get install -y "$1"
+    apt-get install -y $*
   else
     false # not implemented
   fi
@@ -87,9 +97,9 @@ tPackageInstall() {
 
 tPackageUpgrade() {
   if tIsRedHatCompatible; then
-    yum -y upgrade "$1"
+    yum -y upgrade $*
   elif tIsDebianCompatible; then
-    apt-get upgrade -y "$1"
+    apt-get upgrade -y $*
   else
     false # not implemented
   fi
