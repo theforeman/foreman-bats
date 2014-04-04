@@ -53,3 +53,19 @@ platforms:
     for vm in precise squeeze wheezy f19 el6 ; do
         vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
     done
+
+Koji support
+------------
+
+It is possible to execute BATS suite that configures local repository
+containing a build specified by URL of a Koji/Brew instance. The repository
+has higher priority and therefore builds will be picked up. This is great for
+testing installer or any other packages that needs to be installed in early
+stage. Example:
+
+    export KOJI_BUILD="http://koji.katello.org/koji/taskinfo?taskID=97092"
+    fb-setup-koji.bats
+    fb-install-foreman.bats
+
+Just make sure the URL points to a "leaf" task, a page with (S)RPMs and not
+parent task.
