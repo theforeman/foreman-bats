@@ -152,13 +152,13 @@ EOF
 
 @test "check smart proxy is registered" {
   [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
-  count=$(hammer --csv proxy list | wc -l)
+  count=$(hammer -u admin -p changeme --csv proxy list | wc -l)
   [ $count -gt 1 ]
 }
 
 @test "check host is registered" {
   [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
-  hammer host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
+  hammer -u admin -p changeme host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
 }
 
 @test "collect important logs" {
