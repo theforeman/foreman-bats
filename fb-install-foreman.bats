@@ -112,7 +112,7 @@ EOF
 }
 
 @test "run the installer" {
-  if [ x$FOREMAN_VERSION = "x1.5" ]; then
+  if [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ]; then
     foreman-installer --no-colors -v
   else
     foreman-installer --no-colors -v --foreman-admin-password=admin
