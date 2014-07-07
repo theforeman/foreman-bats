@@ -54,6 +54,8 @@ setup() {
 @test "clean after puppet (if installed)" {
   [[ -d /var/lib/puppet/ssl ]] || skip "Puppet not installed, or SSL directory doesn't exist"
   rm -rf /var/lib/puppet/ssl
+  [ -n "$FOREMAN_VERSION" -o x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ] && \
+    service foreman-proxy status && service foreman-proxy stop || true
 }
 
 @test "make sure puppet not configured to other pm" {
