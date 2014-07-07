@@ -171,12 +171,12 @@ EOF
 }
 
 @test "check smart proxy is registered" {
-  count=$(hammer --csv proxy list | wc -l)
+  count=$(hammer $(tHammerCredentials) --csv proxy list | wc -l)
   [ $count -gt 1 ]
 }
 
 @test "check host is registered" {
-  hammer host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
+  hammer $(tHammerCredentials) host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
 }
 
 @test "collect important logs" {
