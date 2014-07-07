@@ -136,9 +136,19 @@ EOF
 }
 
 @test "install all compute resources" {
-  packages="foreman-console foreman-libvirt foreman-vmware foreman-ovirt"
-  tPackageAvailable foreman-gce && packages="$packages foreman-gce"
-  tPackageInstall $packages
+  tPackageInstall foreman-console
+  if [ x$FOREMAN_VERSION = "x1.4" ]; then
+    tPackageInstall foreman-libvirt foreman-vmware foreman-ovirt foreman-gce
+  else
+    foreman-installer --no-colors -v \
+      --enable-foreman-compute-ec2 \
+      --enable-foreman-compute-gce \
+      --enable-foreman-compute-libvirt \
+      --enable-foreman-compute-openstack \
+      --enable-foreman-compute-ovirt \
+      --enable-foreman-compute-rackspace \
+      --enable-foreman-compute-vmware
+  fi
 }
 
 @test "check web app is still up" {
@@ -150,18 +160,20 @@ EOF
 }
 
 @test "install CLI (hammer)" {
-  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
-  tPackageInstall foreman-cli
+  if [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ]; then
+    tPackageInstall foreman-cli
+  else
+    foreman-installer --no-colors -v \
+      --enable-foreman-cli
+  fi
 }
 
 @test "check smart proxy is registered" {
-  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
   count=$(hammer --csv proxy list | wc -l)
   [ $count -gt 1 ]
 }
 
 @test "check host is registered" {
-  [ x$FOREMAN_VERSION = "x1.3" ] && skip "Only supported on 1.4+"
   hammer host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
 }
 
