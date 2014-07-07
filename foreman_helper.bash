@@ -24,3 +24,8 @@ tForemanVersion() {
     fi
   ) | cut -d. -f1-2
 }
+
+tHammerCredentials() {
+  # In 1.6+, the installer will configure ~/.hammer/
+  [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ] && echo "-u admin -p changeme"
+}
