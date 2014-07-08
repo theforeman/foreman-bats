@@ -181,6 +181,34 @@ EOF
   hammer $(tHammerCredentials) host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
 }
 
+# ENC / Puppet class apply tests
+@test "install puppet module" {
+  [ -d /etc/puppet/environments/production/modules/ntp ] || \
+    puppet module install -i /etc/puppet/environments/production/modules -v 3.0.3 puppetlabs/ntp
+  [ -e /etc/puppet/environments/production/modules/ntp/manifests/init.pp ]
+}
+
+@test "import ntp puppet class" {
+  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
+  id=$(hammer $(tHammerCredentials) --csv proxy list | tail -n1 | cut -d, -f1)
+  hammer $(tHammerCredentials) proxy import-classes --id $id
+  count=$(hammer $(tHammerCredentials) --csv puppet-class list --search 'name = ntp' | wc -l)
+  [ $count -gt 1 ]
+}
+
+@test "assign puppet class to host" {
+  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
+  id=$(hammer $(tHammerCredentials) --csv puppet-class list --search 'name = ntp' | tail -n1 | cut -d, -f1)
+  hammer $(tHammerCredentials) host update --puppetclass-ids $id --name $(hostname -f)
+}
+
+@test "apply class with puppet agent" {
+  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
+  puppet agent -v -o --no-daemonize
+  grep -i puppet /etc/ntp.conf
+}
+
+# Cleanup
 @test "collect important logs" {
   tail -n100 /var/log/{apache2,httpd}/*_log /var/log/foreman{-proxy,}/*log /var/log/messages > /root/last_logs || true
   foreman-debug -q -d /root/foreman-debug || true
