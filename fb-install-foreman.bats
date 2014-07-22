@@ -12,6 +12,7 @@ setup() {
   tForemanSetupUrl
   tForemanSetLang
   FOREMAN_VERSION=$(tForemanVersion)
+  tSetOSVersion
 
   if tIsFedora 19; then
     # missing service file in puppet
@@ -63,12 +64,36 @@ setup() {
   sed -ir "s/^\s*server\s*=.*/server = $(hostname -f)/g" /etc/puppet/puppet.conf
 }
 
+@test "wait max 30 secs until network is up" {
+  ping -c1 -w30 8.8.8.8
+}
+
+@test "subscribe and attach channels" {
+  if tIsRHEL; then
+    [[ -z "$RHSM_USER" || -z "$RHSM_PASS" || -z "$RHSM_POOL" ]] && skip "No subscription-manager credentials and pool id"
+    tPackageExists subscription-manager || tPackageInstall subscription-manager
+    echo $RHSM_USER $RHSM_PASS $RHSM_POOL
+    subscription-manager register --username=$RHSM_USER --password=$RHSM_PASS
+    subscription-manager attach --pool=$RHSM_POOL
+    subscription-manager repos --enable rhel-server-rhscl-$OS_VERSION-rpms --enable rhel-$OS_VERSION-server-optional-rpms
+  else
+    skip "Not required"
+  fi
+}
+
 @test "enable epel" {
-  tIsRHEL || skip "EPEL not required on this operating system"
-  tIsRHEL 6 || skip "EPEL not supported on this operating system"
-  EPEL_REL="6-8"
-  tPackageExists epel-release-$EPEL_REL || \
-    rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-$EPEL_REL.noarch.rpm
+  tIsRHEL || skip "Not required"
+  if tIsRHEL 7; then
+    EPEL_REL="7-0.2"
+    tPackageExists epel-release-$EPEL_REL || \
+      yum -y install http://dl.fedoraproject.org/pub/epel/beta/7/x86_64/epel-release-$EPEL_REL.noarch.rpm
+  elif tIsRHEL 6; then
+    EPEL_REL="6-8"
+    tPackageExists epel-release-$EPEL_REL || \
+      rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-$EPEL_REL.noarch.rpm
+  else
+    skip "Unknown RHEL version"
+  fi
 }
 
 @test "configure repository" {
@@ -86,7 +111,6 @@ EOF
       yum-config-manager --disable foreman
     fi
   elif tIsDebianCompatible; then
-    tSetOSVersion
     echo "deb http://deb.theforeman.org/ ${OS_RELEASE} ${FOREMAN_REPO}" > /etc/apt/sources.list.d/foreman.list
     echo "deb http://deb.theforeman.org/ plugins ${FOREMAN_REPO}" >> /etc/apt/sources.list.d/foreman.list
     wget -q http://deb.theforeman.org/foreman.asc -O- | apt-key add -
