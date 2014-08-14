@@ -14,11 +14,6 @@ setup() {
   FOREMAN_VERSION=$(tForemanVersion)
   tSetOSVersion
 
-  # disable selinux on rhel 7 until fixed
-  if tIsRHEL 7; then
-    setenforce 0
-  fi
-
   if tIsFedora 19; then
     # missing service file in puppet
     tPackageExists "puppet" && \
