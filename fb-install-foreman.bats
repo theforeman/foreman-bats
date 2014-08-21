@@ -216,6 +216,8 @@ EOF
       # no PMT support in 2.7.11
       curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-ntp-3.0.3.tar.gz | \
         (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-ntp* ntp)
+      curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-stdlib-4.3.2.tar.gz | \
+        (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-stdlib* stdlib)
     fi
   fi
   [ -e /etc/puppet/environments/production/modules/ntp/manifests/init.pp ]
