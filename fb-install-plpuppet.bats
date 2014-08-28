@@ -20,6 +20,28 @@ load os_helper
   fi
 }
 
+@test "setup puppetlabs nightly repos" {
+  [ x${PUPPET_REPO} = xnightly ] || skip "PUPPET_REPO is not set to nightly"
+  tSetOSVersion
+  if tIsFedora; then
+    curl -o /etc/yum.repos.d/puppet-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-fedora-${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/facter-nightlies.repo \
+      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-fedora-${OS_VERSION}-$(uname -i).repo
+  elif tIsRHEL; then
+    curl -o /etc/yum.repos.d/puppet-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-el-${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/facter-nightlies.repo \
+      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-el-${OS_VERSION}-$(uname -i).repo
+  elif tIsDebianCompatible; then
+    curl -o /etc/apt/sources.list.d/puppet-nightlies.list \
+      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/deb/pl-puppet-latest-${OS_RELEASE}.list
+    curl -o /etc/apt/sources.list.d/facter-nightlies.list \
+      http://nightlies.puppetlabs.com/facter-latest/repo_configs/deb/pl-facter-latest-${OS_RELEASE}.list
+    apt-get update
+  fi
+}
+
 @test "upgrade puppet package" {
   if tPackageExists puppet; then
     tPackageUpgrade puppet\* facter\*

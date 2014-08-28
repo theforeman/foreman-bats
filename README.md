@@ -33,6 +33,11 @@ specified:
   FOREMAN_REPO for the main Foreman URL
 * MODULE_PATH: override the location of modules used for installation.
 
+When using fb-install-plpuppet.bats, the following environment variables can be
+specified:
+
+* PUPPET_REPO: either "nightly" or "stable" (default)
+
 Vagrant support
 ---------------
 
