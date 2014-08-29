@@ -23,11 +23,12 @@ load os_helper
 @test "setup puppetlabs nightly repos" {
   [ x${PUPPET_REPO} = xnightly ] || skip "PUPPET_REPO is not set to nightly"
   tSetOSVersion
+  tPackageExists curl || tPackageInstall curl
   if tIsFedora; then
     curl -o /etc/yum.repos.d/puppet-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-fedora-${OS_VERSION}-$(uname -i).repo
+      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-fedora-f${OS_VERSION}-$(uname -i).repo
     curl -o /etc/yum.repos.d/facter-nightlies.repo \
-      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-fedora-${OS_VERSION}-$(uname -i).repo
+      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-fedora-f${OS_VERSION}-$(uname -i).repo
   elif tIsRHEL; then
     curl -o /etc/yum.repos.d/puppet-nightlies.repo \
       http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-el-${OS_VERSION}-$(uname -i).repo
