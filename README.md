@@ -24,19 +24,45 @@ of BATS and Foreman BATS:
 
     curl --silent https://raw.github.com/theforeman/foreman-bats/master/bootstrap.sh | bash /dev/stdin
 
-When using fb-install-foreman.bats, the following environment variables can be
-specified:
+Available scripts
+-----------------
 
-* FOREMAN_REPO: directory name under yum.tf.org (e.g. /releases/1.3, nightly),
+*Foreman installation test*
+
+This test will perform default Foreman installation.
+
+It's called `fb-install-foreman.bats`, the following environment variables can
+be specified:
+
+* `FOREMAN_REPO`: directory name under yum.tf.org (e.g. /releases/1.3, nightly),
   or component under deb.tf.org (1.3, nightly) to use as Foreman repo
-* FOREMAN_CUSTOM_URL: custom repo URL to configure, overrides use of
-  FOREMAN_REPO for the main Foreman URL
-* MODULE_PATH: override the location of modules used for installation.
+* `FOREMAN_CUSTOM_URL`: custom repo URL to configure, overrides use of
+  `FOREMAN_REPO` for the main Foreman URL
+* `MODULE_PATH`: override the location of modules used for installation.
 
-When using fb-install-plpuppet.bats, the following environment variables can be
-specified:
+*PuppetLabs Puppet installation test*
 
-* PUPPET_REPO: either "nightly" or "stable" (default)
+It installs PuppetLabs Puppet and it is called `fb-install-plpuppet.bats`, the
+following environment variables can be specified:
+
+* `PUPPET_REPO`: either "nightly" or "stable" (default)
+
+*Foreman Hammer CLI smoke test*
+
+Checkouts and executes hammer integration tests. They will create new
+(randomly named) organization and populate various fields, then delete
+everything.
+
+It's called `fb-hammer-tests.bats`.
+
+*oVirt installation with integration tests*
+
+This test named `fb-install-ovirt.bats` installs oVirt All-In-One setup and
+perform basic rbovirt integration test. It requires hardware with
+virtualization support, works fine in nested KVM as well. It accepts the
+following parameters:
+
+* `OVIRT_RELEASE`: version to install specified as simple number (33, 34, 35)
 
 Vagrant support
 ---------------
