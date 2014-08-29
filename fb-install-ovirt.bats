@@ -44,8 +44,9 @@ setup() {
 }
 
 @test "configure repository" {
+  OVIRT_RELEASE=${OVIRT_RELEASE:-34}
   if tIsRedHatCompatible; then
-    yum -y localinstall http://resources.ovirt.org/pub/yum-repo/ovirt-release34.rpm
+    yum -y localinstall http://resources.ovirt.org/pub/yum-repo/ovirt-release${OVIRT_RELEASE}.rpm
   else
     skip "Unknown operating system for this test, setup repo manually"
   fi
