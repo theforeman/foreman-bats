@@ -5,39 +5,47 @@ set -o pipefail
 
 load os_helper
 load foreman_helper
+load beakerlib_helper
+
+URL_PREFIX=""
+FOREMAN_REPO=${FOREMAN_REPO:-nightly}
+tForemanSetupUrl
+tForemanSetLang
+FOREMAN_VERSION=$(tForemanVersion)
+tSetOSVersion
+
+if tIsFedora 19; then
+  # missing service file in puppet
+  tPackageExists "puppet" && \
+    cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
+
+  # puppet selinux is a mess
+  setenforce 0
+fi
+
+# disable firewall
+if tIsRedHatCompatible; then
+  if tFileExists /usr/sbin/firewalld; then
+    systemctl stop firewalld; systemctl disable firewalld
+  elif tCommandExists systemctl; then
+    systemctl stop iptables; systemctl disable iptables
+  else
+    service iptables stop; chkconfig iptables off
+  fi
+fi
+
+# install support utilities
+tPackageExists curl || tPackageInstall curl
+if tIsRedHatCompatible; then
+  tPackageExists yum-utils || tPackageInstall yum-utils
+fi
 
 setup() {
-  URL_PREFIX=""
-  FOREMAN_REPO=${FOREMAN_REPO:-nightly}
-  tForemanSetupUrl
-  tForemanSetLang
-  FOREMAN_VERSION=$(tForemanVersion)
-  tSetOSVersion
+  rlPhaseStartTest "BATS test $BATS_TEST_NAME"
+}
 
-  if tIsFedora 19; then
-    # missing service file in puppet
-    tPackageExists "puppet" && \
-      cp /usr/lib/systemd/system/puppetagent.service /etc/systemd/system/puppet.service
-
-    # puppet selinux is a mess
-    setenforce 0
-  fi
-
-  # disable firewall
-  if tIsRedHatCompatible; then
-    if tFileExists /usr/sbin/firewalld; then
-      systemctl stop firewalld; systemctl disable firewalld
-    elif tCommandExists systemctl; then
-      systemctl stop iptables; systemctl disable iptables
-    else
-      service iptables stop; chkconfig iptables off
-    fi
-  fi
-
-  tPackageExists curl || tPackageInstall curl
-  if tIsRedHatCompatible; then
-    tPackageExists yum-utils || tPackageInstall yum-utils
-  fi
+teardown() {
+  rlPhaseEnd
 }
 
 @test "stop puppet agent (if installed)" {
