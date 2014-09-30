@@ -119,10 +119,12 @@ EOF
 }
 
 @test "run the installer" {
+  args="--no-colors -v ${FOREMAN_USE_LOCATIONS:+--foreman-locations-enabled=$FOREMAN_USE_LOCATIONS} ${FOREMAN_USE_ORGANIZATIONS:+--foreman-organizations-enabled=$FOREMAN_USE_ORGANIZATIONS}"
+
   if [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ]; then
-    foreman-installer --no-colors -v
+    foreman-installer $args
   else
-    foreman-installer --no-colors -v --foreman-admin-password=admin
+    foreman-installer --foreman-admin-password=admin $args
   fi
 }
 
