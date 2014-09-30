@@ -55,7 +55,11 @@ Checkouts and executes hammer integration tests. They will create new
 (randomly named) organization and populate various fields, then delete
 everything.
 
-It's called `fb-hammer-tests.bats`.
+It's called `fb-hammer-tests.bats`.  The following environment variables can
+be specified:
+
+* `HAMMER_TEST_PATH`: /usr/share/hammer-tests by default, if exists will be
+  used instead of the git checkout
 
 *oVirt installation with integration tests*
 
