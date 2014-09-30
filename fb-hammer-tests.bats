@@ -5,13 +5,18 @@ set -o pipefail
 
 load os_helper
 
-TEST_DIR=/usr/share/hammer-tests
+[ -n "$HAMMER_TEST_PATH" ] || HAMMER_TEST_PATH=/usr/share/hammer-tests
 LOG_DIR=/root/hammer_test_logs
 
 @test "checkout the tests" {
-  if [ ! -d "$TEST_DIR" ]; then
-    git clone https://github.com/theforeman/hammer-tests.git "$TEST_DIR"
-  fi
+  [ -d "$HAMMER_TEST_PATH" ] && skip "$HAMMER_TEST_PATH already exists"
+  git clone https://github.com/theforeman/hammer-tests.git "$HAMMER_TEST_PATH"
+}
+
+@test "enable multi-org support" {
+  foreman-installer --no-colors -v \
+    --foreman-organizations-enabled=true --foreman-locations-enabled=true
+  touch ~foreman/tmp/restart.txt
 }
 
 @test "install test dependencies" {
@@ -21,7 +26,7 @@ LOG_DIR=/root/hammer_test_logs
 
 @test "run the tests" {
   mkdir -p "$LOG_DIR"
-  pushd "$TEST_DIR"
+  pushd "$HAMMER_TEST_PATH"
   HT_FOREMAN_LOG_FILE=/var/log/foreman/production.log \
   HT_HAMMER_LOG_FILE=/root/.hammer/log/hammer.log \
   HT_LOGS_LOCATION="$LOG_DIR" \
