@@ -31,7 +31,7 @@ Vagrant.configure("2") do |config|
       machine.vm.provider :rackspace do |p, override|
         override.vm.box = 'dummy'
         p.server_name = machine.vm.hostname
-        p.flavor = /2GB/
+        p.flavor = /2 GB Performance/
         p.image = box[:image_name]
         override.ssh.pty = true if box[:pty]
       end
