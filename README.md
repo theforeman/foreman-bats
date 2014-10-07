@@ -60,6 +60,8 @@ be specified:
 
 * `HAMMER_TEST_PATH`: /usr/share/hammer-tests by default, if exists will be
   used instead of the git checkout
+* `HAMMER_TEST_REPO`: path to the hammer tests' git repo, default is https://github.com/theforeman/hammer-tests.git
+* `HAMMER_TEST_BRANCH`: branch to checkout, default is master
 
 *oVirt installation with integration tests*
 

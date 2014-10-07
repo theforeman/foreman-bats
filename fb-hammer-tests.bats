@@ -5,12 +5,14 @@ set -o pipefail
 
 load os_helper
 
+[ -n "$HAMMER_TEST_BRANCH" ] || HAMMER_TEST_BRANCH=master
+[ -n "$HAMMER_TEST_REPO" ] || HAMMER_TEST_REPO=https://github.com/theforeman/hammer-tests.git
 [ -n "$HAMMER_TEST_PATH" ] || HAMMER_TEST_PATH=/usr/share/hammer-tests
 LOG_DIR=/root/hammer_test_logs
 
 @test "checkout the tests" {
   [ -d "$HAMMER_TEST_PATH" ] && skip "$HAMMER_TEST_PATH already exists"
-  git clone https://github.com/theforeman/hammer-tests.git "$HAMMER_TEST_PATH"
+  git clone -b "$HAMMER_TEST_BRANCH" "$HAMMER_TEST_REPO" "$HAMMER_TEST_PATH"
 }
 
 @test "install test dependencies" {
