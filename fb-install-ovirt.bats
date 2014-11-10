@@ -60,39 +60,44 @@ setup() {
   cat >/tmp/ovirt-answer-file.conf <<EOAF
 # action=setup
 [environment:default]
-OVESETUP_CORE/engineStop=none:None
-OVESETUP_DIALOG/confirmSettings=bool:True
-OVESETUP_DB/database=str:engine
-OVESETUP_DB/fixDbViolations=none:None
-OVESETUP_DB/secured=bool:False
-OVESETUP_DB/host=str:localhost
-OVESETUP_DB/user=str:engine
-OVESETUP_DB/securedHostValidation=bool:False
-OVESETUP_DB/password=str:R3f527AblD9vA0Tk5xiGQb
-OVESETUP_DB/port=int:5432
-OVESETUP_SYSTEM/nfsConfigEnabled=bool:True
-OVESETUP_SYSTEM/memCheckEnabled=bool:True
-OVESETUP_PKI/organization=str:TestOrganization
-OVESETUP_CONFIG/isoDomainName=str:ISO_DOMAIN
-OVESETUP_CONFIG/adminPassword=str:ovirt
-OVESETUP_CONFIG/applicationMode=str:both
-OVESETUP_CONFIG/firewallManager=str:iptables
-OVESETUP_CONFIG/updateFirewall=bool:True
-OVESETUP_CONFIG/websocketProxyConfig=bool:True
-OVESETUP_CONFIG/fqdn=str:$(hostname -f)
-OVESETUP_CONFIG/isoDomainACL=str:0.0.0.0/0.0.0.0(rw)
-OVESETUP_CONFIG/isoDomainMountPoint=str:/var/lib/exports/iso
-OVESETUP_CONFIG/storageType=str:nfs
-OVESETUP_PROVISIONING/postgresProvisioningEnabled=bool:True
-OVESETUP_APACHE/configureRootRedirection=bool:True
-OVESETUP_APACHE/configureSsl=bool:True
-OSETUP_RPMDISTRO/requireRollback=none:None
 OSETUP_RPMDISTRO/enableUpgrade=none:None
+OSETUP_RPMDISTRO/requireRollback=none:None
 OVESETUP_AIO/configure=bool:True
 OVESETUP_AIO/storageDomainDir=str:/var/lib/images
 OVESETUP_AIO/storageDomainName=str:local_domain
+OVESETUP_APACHE/configureRootRedirection=bool:True
+OVESETUP_APACHE/configureSsl=bool:True
+OVESETUP_CONFIG/adminPassword=str:ovirt
+OVESETUP_CONFIG/applicationMode=str:both
+OVESETUP_CONFIG/firewallManager=str:iptables
+OVESETUP_CONFIG/fqdn=str:$(hostname -f)
+OVESETUP_CONFIG/isoDomainACL=str:0.0.0.0/0.0.0.0(rw)
+OVESETUP_CONFIG/isoDomainMountPoint=str:/var/lib/exports/iso
+OVESETUP_CONFIG/isoDomainName=str:ISO_DOMAIN
+OVESETUP_CONFIG/remoteEngineHostRootPassword=none:None
+OVESETUP_CONFIG/remoteEngineHostSshPort=none:None
+OVESETUP_CONFIG/remoteEngineSetupStyle=none:None
+OVESETUP_CONFIG/storageIsLocal=bool:False
+OVESETUP_CONFIG/storageType=str:nfs
+OVESETUP_CONFIG/updateFirewall=bool:True
+OVESETUP_CONFIG/websocketProxyConfig=bool:True
+OVESETUP_CORE/engineStop=none:None
+OVESETUP_DB/database=str:engine
+OVESETUP_DB/fixDbViolations=none:None
+OVESETUP_DB/host=str:localhost
+OVESETUP_DB/password=str:R3f527AblD9vA0Tk5xiGQb
+OVESETUP_DB/port=int:5432
+OVESETUP_DB/secured=bool:False
+OVESETUP_DB/securedHostValidation=bool:False
+OVESETUP_DB/user=str:engine
+OVESETUP_DIALOG/confirmSettings=bool:True
+OVESETUP_ENGINE_CORE/enable=bool:True
+OVESETUP_PKI/organization=str:TestOrganization
+OVESETUP_PROVISIONING/postgresProvisioningEnabled=bool:True
+OVESETUP_SYSTEM/memCheckEnabled=bool:True
+OVESETUP_SYSTEM/nfsConfigEnabled=bool:True
 EOAF
-  engine-setup --config=/tmp/ovirt-answer-file.conf
+  engine-setup --config-append=/tmp/ovirt-answer-file.conf
 }
 
 @test "setup SCL and Foreman repos" {
