@@ -52,6 +52,13 @@ setup() {
   fi
 }
 
+# There are known bugs in oVirt 3.5 All-In-One setup with SELinux
+@test "set permissive SELinux" {
+  if tIsRedHatCompatible; then
+    setenforce 0
+  fi
+}
+
 @test "install all-in-one installer" {
   tPackageInstall ovirt-engine ovirt-engine-setup-plugin-allinone
 }
