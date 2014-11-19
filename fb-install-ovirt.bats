@@ -148,7 +148,7 @@ FOREPO
 
 @test "perform integration tests" {
   test -d rbovirt || git clone https://github.com/abenari/rbovirt
-cat >rbovirt/spec/endpoint.yml <<'ENDPOINT'
+cat >rbovirt/spec/endpoint.yml <<ENDPOINT
 url: "https://$(hostname -f)/api"
 user: "admin@internal"
 password: "ovirt"
