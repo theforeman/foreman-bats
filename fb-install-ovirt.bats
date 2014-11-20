@@ -109,23 +109,13 @@ EOAF
 
 @test "setup SCL and Foreman repos" {
   tIsRedHatCompatible || skip "Not needed"
-  if tIsRHEL 7; then
-    cat >/etc/yum.repos.d/scl-ruby193.repo <<SCLREPO7
-[scl-ruby193]
-name=SCL ruby193
-baseurl=https://www.softwarecollections.org/repos/rhscl/ruby193-el7/epel-$OS_VERSION-\$basearch/
-enabled=1
-gpgcheck=0
-SCLREPO7
-  elif tIsRHEL 6; then
-    cat >/etc/yum.repos.d/scl-ruby193.repo <<SCLREPO6
+  cat >/etc/yum.repos.d/scl-ruby193.repo <<SCLREPO
 [scl-ruby193]
 name=SCL ruby193
 baseurl=https://www.softwarecollections.org/repos/rhscl/ruby193/epel-$OS_VERSION-\$basearch/
 enabled=1
 gpgcheck=0
-SCLREPO6
-  fi
+SCLREPO
 
   cat >/etc/yum.repos.d/foreman.repo<<FOREPO
 [foreman-nightly]
