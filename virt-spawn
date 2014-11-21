@@ -1,0 +1,277 @@
+#!/bin/bash
+
+usage() {
+cat <<USAGE
+usage: $0 options -- VARIABLE1=value1 ...
+
+Wrapper around virt-builder and virt-install with dnsmasq support.
+
+This script helps with spawning VMs by calling virt-builder and virt-install
+tools with proper parameters and also modifying dnsmasq configuration to setup
+hostnames properly sending SIGHUP to dnsmasq to refresh.
+
+All VMs created by this tool has root password set to "redhat" but your public
+key is also automatically deployed into the VM.
+
+The script is best to use with BATS testing suite for running installation and
+integration tests. It was developed for The Foreman open-source project.
+
+Before you start, install required dependencies:
+
+  $0 --install-deps
+
+OPTIONS:
+  --help | -h
+        Show this message
+
+  --name | -n
+        Image name, default: $NAME
+
+  --distro | -d
+        Distribution base image for virt-builder. default: $DISTRO
+
+  --os-variant | -t
+        OS variant for virt-install. To get the full list use
+        virt-install --os-variant=list command. Default: $DISTRO
+
+  --ram | -r
+        Amount of memory for the VM in kbytes, default: $RAM
+
+  --disk | -k
+        Size of the image, default $SIZE
+
+  --force | -f
+        Overwrite target image and VM if they exist
+
+  --no-sudo
+        Do not use sudo for building and running VM - you will need to
+        set --image-dir accordingly too when running under regular user.
+
+  --build-opts [options]
+        Addtional options for virt-builder (e.g. "--size 50G").
+        You can only provide this option once, enquote if you need more
+        options.
+
+  --image-dir [path]
+        Target images path
+        Default: $IMAGEDIR
+
+  --domain [domain]
+        Domain suffix like "mycompany.com", default: $DOMAIN
+
+  --subnet [subnet]
+        Subnet to be used for writing DHCP/DNS configuration
+        Default: $SUBNET (note there is no suffix or period)
+
+  --pub-key [key]
+        Install this public ssh key
+        Default: $PUBKEY
+
+  --script [name]
+        BATS script to execute during first boot (can be any shell command)
+        Can specify multiple times for multiple commands (scripts)
+        Default: $SCRIPT
+
+  --install-deps
+        Install required dependencies
+
+Integration with dnsmasq is optional, but if you want to take advantage of it,
+configure your local dnsmasq to be your caching DNS server with exception for
+locally provisioned VMs:
+
+  # cat /etc/dnsmasq.d/virt-spawn
+  addn-hosts=/var/lib/libvirt/dnsmasq/default.addnhosts
+
+  # cat /etc/dnsmasq.d/caching
+  bind-interfaces
+  cache-size=500
+  listen-address=127.0.0.1
+  resolv-file=/etc/resolv.dnsmasq
+
+  # cp /etc/resolv.conf /etc/resolv.dnsmasq
+  # chattr +i /etc/resolv.conf
+
+  systemctl enable dnsmasq
+  systemctl start dnsmasq
+
+Example:
+
+  virt-spawn -n my-nightly-foreman -f
+  virt-spawn -n rc-foreman -- "FOREMAN_REPO=rc" "MYVAR=value"
+  virt-spawn -n stable-foreman -- "FOREMAN_REPO=releases/1.5"
+  virt-spawn -n bz981123 -- "KOJI_BUILD=http://mykoji.blah/taskinfo?taskID=97281"
+  virt-spawn -n my-own-script --script fb-xyz.bats -- BATS_REPOOWNER=lzap BATS_BRANCH=test
+
+USAGE
+}
+
+NAME=nightly
+DOMAIN=local.lan
+DISTRO=centos-6
+OSVARIANT=rhel6
+IMAGEDIR=/var/lib/libvirt/images
+SUBNET='192.168.122'
+PUBKEY=$HOME/.ssh/id_rsa.pub
+FORCE=0
+RAM=3200
+SIZE=6G
+BUILD_OPTS=""
+SUDO=sudo
+SCRIPTS=()
+
+if ! options=$(getopt -o hfn:d:r:k:t: -l help,name:,distro:,ram:,disk:,build-opts:,pub-key:,install-deps,image-dir:,domain:,script:,no-sudo,subnet:,os-variant:,force -- "$@"); then
+  exit 1
+fi
+
+eval set -- $options
+
+while [ $# -gt 0 ]; do
+    case $1 in
+    --name|-n) NAME="$2" ; shift ;;
+    --distro|-d) DISTRO="$2" ; shift ;;
+    --os-variant|-t) OSVARIANT="$2" ; shift ;;
+    --image-dir|-p) IMAGEDIR="$2" ; shift ;;
+    --domain) DOMAIN="$2" ; shift ;;
+    --ram|-r) RAM="$2" ; shift ;;
+    --disk|-k) SIZE="$2" ; shift ;;
+    --subnet) SUBNET="$2" ; shift ;;
+    --build-opts) BUILD_OPTS="$2" ; shift ;;
+    --pub-key) PUBKEY="$2" ; shift ;;
+    --script) SCRIPTS+=("$2") ; shift ;;
+    --install-deps) sudo yum -y install openssl virt-install libguestfs libguestfs-tools util-linux sudo libxml2 fortune-mod; exit 0 ;;
+    --no-sudo) SUDO='' ;;
+    --force|-f) FORCE=1 ;;
+    --help|-h) usage;  exit ;;
+    (--) shift; break;;
+    (-*) echo "$0: error - unrecognized option $1" 1>&2; exit 1;;
+    (*) break;;
+    esac
+    shift
+done
+
+echo "Parsing extra arguments"
+EXPORTS=()
+BATS_REPOOWNER="theforeman"
+BATS_BRANCH="master"
+while [ $# -gt 0 ]; do
+  echo "$1"; eval "$1"
+  EXPORTS+=("export $1")
+  shift
+done
+
+if [ ${#SCRIPTS[@]} -eq 0 ]; then
+  SCRIPTS=(fb-install-foreman.bats)
+fi
+
+FQDN=${NAME}.${DOMAIN}
+IMAGE=${IMAGEDIR}/$FQDN.img
+MAC="52:54:01$(echo "$(hostname)${FQDN}" | openssl dgst -md5 -binary | hexdump -e '/1 ":%02x"' -n 3)"
+TMP_BOOTSCRIPT=$(mktemp virt-builder-boot-script-XXXXXXXXXX)
+TMP_SCRIPT=$(mktemp virt-builder-build-script-XXXXXXXXXX)
+trap "rm -f $TMP_BOOTSCRIPT $TMP_SCRIPT" EXIT
+
+if [[ FORCE -eq 0 ]]; then
+  if [[ -f ${IMAGE} ]]; then
+    echo "Image $IMAGE exists, use --force Luke!"; exit 1
+  fi
+  if $SUDO virsh domstate $FQDN >/dev/null 2>&1; then
+    echo "Domain $FQDN exists, use --force Luke!"; exit 1
+  fi
+fi
+
+echo "Stopping and removing $FQDN if exists"
+$SUDO virsh destroy $FQDN >/dev/null 2>&1
+$SUDO virsh undefine $FQDN >/dev/null 2>&1
+
+echo "Reading your public ssh key"
+PUBLIC_KEY=$(cat $PUBKEY)
+
+echo "Removing existing DHCP/DNS configuration from libvirt"
+netdump="$SUDO virsh net-dumpxml default"
+virsh_dhcp=$($netdump | xmllint --xpath "/network/ip/dhcp/host[@mac='$MAC']" - 2>/dev/null)
+virsh_dns=$($netdump | xmllint --xpath "/network/dns/host/hostname[text()='$FQDN']/parent::host" - 2>/dev/null)
+$SUDO virsh net-update default delete ip-dhcp-host --xml "$virsh_dhcp" --live --config 2>/dev/null
+$SUDO virsh net-update default delete dns-host --xml "$virsh_dns" --live --config 2>/dev/null
+
+while true; do
+  AIP="${SUBNET}.$(( ( RANDOM % 250 )  + 2 ))"
+  echo "Checking if random IP $AIP is not in use"
+  $netdump | xmllint --xpath "/network/ip/dhcp/host[@ip='$AIP']" - &>/dev/null || break
+done
+
+echo "Deploying DHCP/DNS configuration via libvirt for $AIP"
+$SUDO virsh net-update default add-last ip-dhcp-host --xml "<host mac='$MAC' name='$FQDN' ip='$AIP'/>" --live --config
+$SUDO virsh net-update default add-last dns-host --xml "<host ip='$AIP'><hostname>$FQDN</hostname></host>"  --live --config
+
+cat <<EOFBS > $TMP_BOOTSCRIPT
+#!/bin/sh
+$(for ix in ${!EXPORTS[*]}; do printf "%s\n" "${EXPORTS[$ix]}"; done)
+export HOME=/root
+cd \$HOME
+type restorecon && restorecon -RvvF .ssh
+while ! ping -c1 -w10 8.8.8.8 &>/dev/null; do true; done
+set -x
+type git || yum -y install git || (apt-get update && apt-get -y install git)
+git clone https://github.com/sstephenson/bats.git && bats/install.sh /usr/local
+git clone https://github.com/$BATS_REPOOWNER/foreman-bats.git -b $BATS_BRANCH && foreman-bats/install.sh /usr/local
+git clone https://github.com/lzap/bin-public.git
+export PATH=/usr/local/bin:/root/bin-public:\$PATH
+[[ -n "\$KOJI_BUILD" ]] && fb-setup-koji.bats
+$(export IFS=$'\n'; echo "${SCRIPTS[*]}")
+EOFBS
+
+cat <<EOFS > $TMP_SCRIPT
+# debian/ubuntu image reconfiguration
+type dpkg && dpkg-reconfigure openssh-server
+
+# ssh key deployment
+mkdir /root/.ssh
+echo $PUBLIC_KEY > /root/.ssh/authorized_keys
+chmod 700 /root/.ssh
+chmod 600 /root/.ssh/authorized_keys
+true
+EOFS
+
+echo "Building new image based on $DISTRO"
+$SUDO virt-builder $DISTRO \
+  -o $IMAGE \
+  --root-password password:redhat \
+  --hostname $FQDN \
+  --run $TMP_SCRIPT \
+  --firstboot $TMP_BOOTSCRIPT \
+  --size $SIZE \
+  $BUILD_OPTS \
+  || exit 2
+
+echo "Spawning new VM with MAC address $MAC"
+$SUDO virt-install --import \
+  --cpu host \
+  --os-variant $OSVARIANT \
+  --name $FQDN \
+  --ram $RAM \
+  --disk path=$IMAGE,format=raw,bus=virtio \
+  --graphics spice \
+  --noautoconsole \
+  --network=default,mac=$MAC,model=virtio \
+  --force \
+  || exit 3
+echo "First boot initiated and the VM is resizing drive"
+
+echo "Refreshing local dnsmasq configuration"
+$SUDO pkill -SIGHUP dnsmasq
+
+# set hostname on the libvirt dns
+echo "Waiting for IP address to show up"
+i=0; until [ $i -ge 200 ] || IPADDR=$(arp -an | grep $MAC | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}'); do
+  i=$((i + 1)); sleep 1
+done
+echo "The new guest received $IPADDR (expected $AIP)"
+
+echo "Done! Your guest networking should be up and running soon."
+echo "Login and watch virt-sysprep-firstboot.log for progress."
+echo
+echo " ssh root@$FQDN"
+echo " http://$FQDN"
+echo " https://$FQDN"
+echo
+type fortune &>/dev/null && fortune

@@ -93,6 +93,23 @@ platforms:
         vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
     done
 
+Support for virt-builder/virt-install
+-------------------------------------
+
+This git repo comes with a virt-spawn wrapper script around virt-builder and
+virt-install tools. It creates disk images via virt-builder seeding bats
+script for the first boot (`--script` option, by default it deploys
+fb-install-foreman.bats script). Then it spawns the image on libvirt via
+virt-install.
+
+The tool have many options and it also configures dnsmasq for hostnames. See
+the `--help` option to get instructions how to take advantage of that feature.
+Few examples:
+
+    virt-spawn -n my-nightly-foreman -f
+    virt-spawn -n rc-foreman --script fb-my-script.bats -- "FOREMAN_REPO=rc" "MYVAR=value"
+    virt-spawn -n bz981123 -- "KOJI_BUILD=http://mykoji.blah/taskinfo?taskID=97281"
+
 Koji support
 ------------
 
