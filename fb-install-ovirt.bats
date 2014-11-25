@@ -137,6 +137,8 @@ FOREPO
 }
 
 @test "perform integration tests" {
+  # some integration tests are longish and http timeouts
+  export RBOVIRT_REST_TIMEOUT=500
   test -d rbovirt || git clone https://github.com/abenari/rbovirt
 cat >rbovirt/spec/endpoint.yml <<ENDPOINT
 url: "https://$(hostname -f)/api"
