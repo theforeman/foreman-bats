@@ -186,7 +186,7 @@ EOF
 }
 
 @test "check host is registered" {
-  hammer $(tHammerCredentials) host info --name $(hostname -f) | egrep "Last report.*$(date +%Y/%m/%d)"
+  hammer $(tHammerCredentials) host info --name $(hostname -f) | egrep "Last report:.*[[:alnum:]]+"
 }
 
 # ENC / Puppet class apply tests
