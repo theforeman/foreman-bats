@@ -234,3 +234,11 @@ EOF
     sosreport --batch --tmp-dir=/root || true
   fi
 }
+
+@test "install selinux tools on Red Hats" {
+  if tIsRedHatCompatible; then
+    tPackageInstall setools-console policycoreutils-python policycoreutils selinux-policy-devel
+  else
+    skip "Not Red Hat"
+  fi
+}
