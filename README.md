@@ -22,7 +22,7 @@ BATS installation and cli end-to-end testing scripts for Foreman project
 There is also a helper script that automates git installation and installation
 of BATS and Foreman BATS:
 
-    curl --silent https://raw.github.com/theforeman/foreman-bats/master/bootstrap.sh | bash /dev/stdin
+    curl -Ls https://raw.github.com/theforeman/foreman-bats/master/bootstrap.sh | bash /dev/stdin
 
 Available scripts
 -----------------
