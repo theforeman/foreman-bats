@@ -216,7 +216,8 @@ EOF
 @test "assign puppet class to host" {
   [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
   id=$(hammer $(tHammerCredentials) --csv puppet-class list --search 'name = ntp' | tail -n1 | cut -d, -f1)
-  hammer $(tHammerCredentials) host update --puppetclass-ids $id --name $(hostname -f)
+  pc_ids=$(hammer $(tHammerCredentials) host update --help | awk '/class-ids/ {print $1}')
+  hammer $(tHammerCredentials) host update $pc_ids $id --name $(hostname -f)
 }
 
 @test "apply class with puppet agent" {
