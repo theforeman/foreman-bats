@@ -139,7 +139,7 @@ tRHSubscribeAttach() {
 tRHEnableEPEL() {
   tIsRHEL || skip "Not required"
   if tIsRHEL 7; then
-    EPEL_REL="7-2"
+    EPEL_REL="7-5"
     tPackageExists epel-release-$EPEL_REL || \
       yum -y install http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-${EPEL_REL}.noarch.rpm
   elif tIsRHEL 6; then
