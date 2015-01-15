@@ -1,14 +1,14 @@
 # vim: sw=2:ts=2:et:ft=ruby
 
 boxes = [
-  {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :image_name => /Ubuntu.*12\.04/, :os_user => 'ubuntu'},
-  {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => /Ubuntu.*14\.04/, :os_user => 'ubuntu'},
-  {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => /Debian.*6/,      :os_user => 'debian'},
-  {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => /Debian.*7/,      :os_user => 'debian'},
-  {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => /Fedora.*19/,                    :pty => true},
-  {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => /Fedora.*20/,                    :pty => true},
-  {:name => 'el6',      :libvirt => 'fm-centos64',   :image_name => /CentOS 6\.5/, :default => true, :pty => true},
-  {:name => 'el7',      :libvirt => 'fm-centos70',   :image_name => /CentOS 7/,    :default => true, :pty => true},
+  {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :image_name => 'Ubuntu.*12\.04', :os_user => 'ubuntu'},
+  {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => 'Ubuntu.*14\.04', :os_user => 'ubuntu'},
+  {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => 'Debian.*6',      :os_user => 'debian'},
+  {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => 'Debian.*7',      :os_user => 'debian'},
+  {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => 'Fedora.*19',                 :pty => true},
+  {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => 'Fedora.*20',                 :pty => true},
+  {:name => 'el6',      :libvirt => 'fm-centos64',   :image_name => 'CentOS 6', :default => true, :pty => true},
+  {:name => 'el7',      :libvirt => 'fm-centos70',   :image_name => 'CentOS 7', :default => true, :pty => true},
 ]
 
 if ENV['box']
@@ -32,7 +32,7 @@ Vagrant.configure("2") do |config|
         override.vm.box = 'dummy'
         p.server_name = machine.vm.hostname
         p.flavor = /2 GB Performance/
-        p.image = box[:image_name]
+        p.image = Regexp.new(box[:image_name] + '.*PV')
         override.ssh.pty = true if box[:pty]
       end
 
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
         override.vm.box = 'dummy'
         p.server_name   = machine.vm.hostname
         p.flavor        = /m1.tiny/
-        p.image         = box[:image_name] # Might as well use consistent image names
+        p.image         = Regexp.new(box[:image_name]) # Might as well use consistent image names
         p.ssh_username  = box[:os_user]  # login for the VM
 
         # ~/.vagrant.d/Vagrantfile will need
