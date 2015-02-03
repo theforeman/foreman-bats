@@ -68,6 +68,19 @@ setup() {
   ping -c1 -w30 8.8.8.8
 }
 
+@test "install SELinux tools" {
+  if tIsRedHatCompatible; then
+    tPackageInstall install setools-console policycoreutils-python policycoreutils selinux-policy-devel
+    sepolgen-ifgen
+  else
+    skip "not needed for this OS"
+  fi
+}
+
+@test "update important system packages" {
+  tPackageUpgrade bash openssh ca-certificates sudo selinux-policy\* yum\* abrt\* sos
+}
+
 @test "subscribe and attach channels" {
   tRHSubscribeAttach
 }
@@ -224,6 +237,18 @@ EOF
   [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
   puppet agent -v -o --no-daemonize
   grep -i puppet /etc/ntp.conf
+}
+
+@test "set default root password to 'redhat'" {
+  echo 'Setting["root_pass"] = "$1$redhat$9yxjZID8FYVlQzHGhasqW/"' | foreman-rake console
+}
+
+@test "set idle timeout" {
+  echo 'Setting["idle_timeout"] = 9999' | foreman-rake console
+}
+
+@test "set entries per page" {
+  echo 'Setting["entries_per_page"] = 100' | foreman-rake console
 }
 
 # Cleanup
