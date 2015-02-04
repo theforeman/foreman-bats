@@ -78,7 +78,11 @@ setup() {
 }
 
 @test "update important system packages" {
-  tPackageUpgrade bash openssh ca-certificates sudo selinux-policy\* yum\* abrt\* sos
+  if tIsRedHatCompatible; then
+    tPackageUpgrade bash openssh ca-certificates sudo selinux-policy\* yum\* abrt\* sos
+  elif tIsDebianCompatible; then
+    tPackageUpgrade bash ssh ca-certificates sudo
+  fi
 }
 
 @test "subscribe and attach channels" {
