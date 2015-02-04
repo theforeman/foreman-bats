@@ -71,7 +71,7 @@ setup() {
 @test "install SELinux tools" {
   if tIsRedHatCompatible; then
     tPackageInstall install setools-console policycoreutils-python policycoreutils selinux-policy-devel
-    sepolgen-ifgen
+    sepolgen-ifgen || true
   else
     skip "not needed for this OS"
   fi
