@@ -204,7 +204,7 @@ $SUDO virsh net-update default add-last ip-dhcp-host --xml "<host mac='$MAC' nam
 $SUDO virsh net-update default add-last dns-host --xml "<host ip='$AIP'><hostname>$FQDN</hostname></host>"  --live --config
 
 cat <<EOFBS > $TMP_BOOTSCRIPT
-#!/bin/sh
+#!/bin/bash
 $(for ix in ${!EXPORTS[*]}; do printf "%s\n" "${EXPORTS[$ix]}"; done)
 export HOME=/root
 cd \$HOME
@@ -221,6 +221,7 @@ $(export IFS=$'\n'; echo "${SCRIPTS[*]}")
 EOFBS
 
 cat <<EOFS > $TMP_SCRIPT
+#!/bin/bash
 # debian/ubuntu image reconfiguration
 type dpkg && dpkg-reconfigure openssh-server
 
