@@ -60,6 +60,7 @@ EON
 </pool>
 EOP
   virsh pool-define /tmp/nested.xml
+  virsh pool-start nested
   virsh pool-autostart nested
 }
 
@@ -106,7 +107,7 @@ EOP
 }
 
 @test "associate partition table" {
-  hammer -d os add-ptable --id 1 --ptable "Kickstart default"
+  hammer -d os add-ptable --id 1 --partition-table "Kickstart default"
 }
 
 @test "associate installation media" {
@@ -163,12 +164,8 @@ EOP
     --subnet nested.lan \
     --operatingsystem-id 1 \
     --medium-id 1 \
-    --ptable "Kickstart default" \
+    --partition-table "Kickstart default" \
     --puppet-proxy-id 1 \
     --puppet-ca-proxy-id 1 \
     --environment production
-}
-
-@test "run foreman-debug" {
-  foreman-debug -q -d /root/foreman-debug || true
 }
