@@ -20,6 +20,14 @@ LOG_DIR=/root/hammer_test_logs
   gem install open4 colorize
 }
 
+@test "switch Foreman log level to debug" {
+  sed -i 's/.*config.log_level.*/  config.log_level = :debug/g' /usr/share/foreman/config/environments/production.rb
+}
+
+@test "restart Foreman" {
+  touch ~foreman/tmp/restart.txt
+}
+
 @test "run the tests" {
   mkdir -p "$LOG_DIR"
   pushd "$HAMMER_TEST_PATH"
