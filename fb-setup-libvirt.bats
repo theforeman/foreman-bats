@@ -83,7 +83,7 @@ EOP
 }
 
 @test "refresh puppet facts" {
-  puppet agent -t -v
+  puppet agent -v -o --no-daemonize
 }
 
 @test "create nested libvirt compute resource" {
