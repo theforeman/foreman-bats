@@ -95,8 +95,6 @@ setup() {
 
 @test "configure repository" {
   if tIsRedHatCompatible; then
-    rpm -q foreman-release || yum -y install $FOREMAN_URL
-
     if [ -n "$FOREMAN_CUSTOM_URL" ]; then
       cat > /etc/yum.repos.d/foreman-custom.repo <<EOF
 [foreman-custom]
@@ -105,7 +103,10 @@ enabled=1
 gpgcheck=0
 baseurl=${FOREMAN_CUSTOM_URL}
 EOF
+      rpm -q foreman-release || yum -y install foreman-release
       yum-config-manager --disable foreman
+    else
+      rpm -q foreman-release || yum -y install $FOREMAN_URL
     fi
   elif tIsDebianCompatible; then
     echo "deb ${FOREMAN_CUSTOM_URL:-http://deb.theforeman.org/} ${OS_RELEASE} ${FOREMAN_REPO}" > /etc/apt/sources.list.d/foreman.list
