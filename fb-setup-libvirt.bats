@@ -126,11 +126,14 @@ EOP
 }
 
 @test "set default templates" {
-  # must use IDs - by name not implemented yet
-  hammer -d os  set-default-template --id 1 --config-template-id 18
-  hammer -d os  set-default-template --id 1 --config-template-id 20
-  hammer -d os  set-default-template --id 1 --config-template-id 21
-  hammer -d os  set-default-template --id 1 --config-template-id 23
+  tForemanGetTemplateId "Kickstart default" "provision"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
+  tForemanGetTemplateId "Kickstart default finish" "finish"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
+  tForemanGetTemplateId "Kickstart default PXELinux" "PXELinux"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
+  tForemanGetTemplateId "Kickstart default user data" "user_data"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
 }
 
 @test "create subnet" {

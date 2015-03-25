@@ -29,3 +29,9 @@ tHammerCredentials() {
   # In 1.6+, the installer will configure ~/.hammer/
   [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ] && echo "-u admin -p changeme"
 }
+
+tForemanGetTemplateId() {
+  # must use IDs - by name not implemented yet
+  TPL_ID=$(hammer --csv template list --search "kind = \"$2\" AND name = \"$1\"" | tail -n1 | awk -F, '{print $1}')
+}
+
