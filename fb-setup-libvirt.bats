@@ -172,3 +172,8 @@ EOP
     --puppet-ca-proxy-id 1 \
     --environment production
 }
+
+@test "install provisioning-related plugins" {
+  tForemanInstallPlugin bootdisk docker discovery templates hooks
+  service httpd restart
+}

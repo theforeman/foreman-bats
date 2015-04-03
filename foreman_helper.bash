@@ -35,3 +35,12 @@ tForemanGetTemplateId() {
   TPL_ID=$(hammer --csv template list --search "kind = \"$2\" AND name = \"$1\"" | tail -n1 | awk -F, '{print $1}')
 }
 
+tForemanInstallPlugin() {
+  for P in "$@"; do
+    if tIsRedHatCompatible; then
+      tPackageInstall ruby193-rubygem-foreman_$P
+    else
+      tPackageInstall ruby-foreman-$P
+    fi
+  done
+}
