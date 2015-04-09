@@ -5,6 +5,7 @@ boxes = [
   {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => 'Ubuntu.*14\.04', :os_user => 'ubuntu'},
   {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => 'Debian.*6',      :os_user => 'debian'},
   {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => 'Debian.*7',      :os_user => 'debian'},
+  {:name => 'jessie',   :libvirt => 'fm-debian8',    :image_name => 'Debian.*Jessie', :os_user => 'debian'},
   {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => 'Fedora.*19',                 :pty => true},
   {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => 'Fedora.*20',                 :pty => true},
   {:name => 'el6',      :libvirt => 'fm-centos64',   :image_name => 'CentOS 6', :default => true, :pty => true},
