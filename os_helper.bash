@@ -89,7 +89,8 @@ tPackageInstall() {
   if tIsRedHatCompatible; then
     yum -y install $*
   elif tIsDebianCompatible; then
-    apt-get install -y $*
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install $*
   else
     false # not implemented
   fi
@@ -99,7 +100,8 @@ tPackageUpgrade() {
   if tIsRedHatCompatible; then
     yum -y upgrade $*
   elif tIsDebianCompatible; then
-    apt-get upgrade -y $*
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade $*
   else
     false # not implemented
   fi
