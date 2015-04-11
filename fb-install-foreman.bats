@@ -149,6 +149,9 @@ EOF
 @test "check for no changes when running the installer" {
   [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.6+"
   tIsDebianCompatible && [ x$OS_RELEASE = xsqueeze -o x$OS_RELEASE = xprecise ] && skip "Known bug #6520"
+  if [ "x${OS_RELEASE}" = "xjessie" ]; then
+    mkdir /etc/puppet/files # workaround for Debian bug #782325
+  fi
   foreman-installer --no-colors -v --detailed-exitcodes
   [ $? -eq 0 ]
 }
