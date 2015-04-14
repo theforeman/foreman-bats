@@ -159,10 +159,6 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-if [ ${#SCRIPTS[@]} -eq 0 ]; then
-  SCRIPTS=(fb-install-foreman.bats)
-fi
-
 FQDN=${NAME}.${DOMAIN}
 IMAGE=${IMAGEDIR}/$FQDN.img
 MAC="52:54:01$(echo "$(hostname)${FQDN}" | openssl dgst -md5 -binary | hexdump -e '/1 ":%02x"' -n 3)"
