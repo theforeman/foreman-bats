@@ -11,6 +11,16 @@ setup() {
   tSetOSVersion
 }
 
+@test "disable firewall" {
+  if tFileExists /usr/sbin/firewalld; then
+    systemctl stop firewalld; systemctl disable firewalld
+  elif tCommandExists systemctl; then
+    systemctl stop iptables; systemctl disable iptables
+  else
+    service iptables stop; chkconfig iptables off
+  fi
+}
+
 @test "install git and utilities" {
   yum install -y git ruby curl screen
 }
@@ -21,7 +31,7 @@ setup() {
 
 @test "run katello-deploy" {
   cd katello-deploy/
-  ./setup.rb --version $KATELLO_VERSION
+  ./setup.rb --version $KATELLO_VERSION --installer-options "--foreman-admin-password admin"
 }
 
 @test "wait 10 seconds" {
