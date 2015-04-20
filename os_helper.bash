@@ -101,7 +101,7 @@ tPackageUpgrade() {
     yum -y upgrade $*
   elif tIsDebianCompatible; then
     export DEBIAN_FRONTEND=noninteractive
-    apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade $*
+    apt-get -y --only-upgrade -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install $*
   else
     false # not implemented
   fi

@@ -81,7 +81,7 @@ setup() {
   if tIsRedHatCompatible; then
     tPackageUpgrade bash openssh ca-certificates sudo selinux-policy\* yum\* abrt\* sos
   elif tIsDebianCompatible; then
-    tPackageUpgrade bash ssh ca-certificates sudo
+    tPackageUpgrade bash openssh-client ca-certificates sudo
   fi
 }
 
