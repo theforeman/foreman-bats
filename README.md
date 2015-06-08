@@ -1,5 +1,4 @@
-foreman-bats
-============
+# foreman-bats
 
 BATS installation and cli end-to-end testing scripts for Foreman project
 
@@ -24,15 +23,13 @@ of BATS and Foreman BATS:
 
     curl -Ls https://raw.github.com/theforeman/foreman-bats/master/bootstrap.sh | bash /dev/stdin
 
-Available scripts
------------------
+## Available scripts
 
-*Foreman installation test*
+### Foreman installation test (fb-install-foreman.bats)
 
 This test will perform default Foreman installation.
 
-It's called `fb-install-foreman.bats`, the following environment variables can
-be specified:
+The following environment variables can be specified:
 
 * `FOREMAN_REPO`: directory name under yum.tf.org (e.g. /releases/1.3, nightly),
   or component under deb.tf.org (1.3, nightly) to use as Foreman repo
@@ -42,38 +39,36 @@ be specified:
 * `FOREMAN_USE_ORGANIZATIONS`: whether to use organizations or not (value can be true/false)
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
 
-*PuppetLabs Puppet installation test*
+### Puppet Labs Puppet installation (fb-install-plpuppet.bats)
 
-It installs PuppetLabs Puppet and it is called `fb-install-plpuppet.bats`, the
-following environment variables can be specified:
+It configures Puppet Labs's distribution of Puppet and should be run before
+installing Foreman.  The following environment variables can be specified:
 
 * `PUPPET_REPO`: either "nightly" or "stable" (default)
 
-*Foreman Hammer CLI smoke test*
+### Foreman Hammer CLI smoke test (fb-hammer-tests.bats)
 
 Checkouts and executes hammer integration tests. They will create new
 (randomly named) organization and populate various fields, then delete
 everything.
 
-It's called `fb-hammer-tests.bats`.  The following environment variables can
-be specified:
+The following environment variables can be specified:
 
 * `HAMMER_TEST_PATH`: /usr/share/hammer-tests by default, if exists will be
   used instead of the git checkout
 * `HAMMER_TEST_REPO`: path to the hammer tests' git repo, default is https://github.com/theforeman/hammer-tests.git
 * `HAMMER_TEST_BRANCH`: branch to checkout, default is master
 
-*oVirt installation with integration tests*
+### oVirt installation with integration tests (fb-install-ovirt.bats)
 
-This test named `fb-install-ovirt.bats` installs oVirt All-In-One setup and
+This test installs oVirt's All-In-One setup and
 perform basic rbovirt integration test. It requires hardware with
 virtualization support, works fine in nested KVM as well. It accepts the
 following parameters:
 
 * `OVIRT_RELEASE`: version to install specified as simple number (33, 34, 35)
 
-Libvirt support
----------------
+### Libvirt compute resource installation (fb-setup-libvirt.bats)
 
 It is possible to configure Compute Resource within Foreman against libvirt
 running on localhost. The `fb-setup-libvirt.bats` can be used to install
@@ -87,8 +82,7 @@ To use nested KVM you only need to do this on the *host* machine:
 You can either restart your host machine, or `modprobe kvm-intel` and
 restarting libvirtd daemon.
 
-Vagrant support
----------------
+## Vagrant support
 
 A Vagrantfile is supplied with multi-OS support.  This will transfer
 foreman-bats to the VM and tests can then be executed via `vagrant ssh`:
@@ -108,8 +102,7 @@ platforms:
         vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
     done
 
-Support for virt-builder/virt-install
--------------------------------------
+## Support for virt-builder/virt-install
 
 This git repo comes with a virt-spawn wrapper script around virt-builder and
 virt-install tools. It creates disk images via virt-builder seeding bats
@@ -125,8 +118,7 @@ Few examples:
     virt-spawn -n rc-foreman --script fb-my-script.bats -- "FOREMAN_REPO=rc" "MYVAR=value"
     virt-spawn -n bz981123 -- "KOJI_BUILD=http://mykoji.blah/taskinfo?taskID=97281"
 
-Koji support
-------------
+## Koji support
 
 It is possible to execute BATS suite that configures local repository
 containing a build specified by URL of a Koji/Brew instance. The repository
