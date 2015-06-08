@@ -138,12 +138,8 @@ EOF
 
 @test "run the installer" {
   args="--no-colors -v ${FOREMAN_USE_LOCATIONS:+--foreman-locations-enabled=$FOREMAN_USE_LOCATIONS} ${FOREMAN_USE_ORGANIZATIONS:+--foreman-organizations-enabled=$FOREMAN_USE_ORGANIZATIONS}"
-
-  if [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ]; then
-    foreman-installer $args
-  else
-    foreman-installer --foreman-admin-password=admin $args
-  fi
+  [ x$FOREMAN_VERSION = "x1.7" -o x$FOREMAN_VERSION = "x1.8" ] || args="${args} --foreman-logging-level=debug"
+  foreman-installer --foreman-admin-password=admin $args
 }
 
 @test "check for no changes when running the installer" {
