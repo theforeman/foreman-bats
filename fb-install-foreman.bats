@@ -171,93 +171,14 @@ EOF
 
 @test "install all compute resources" {
   tPackageInstall foreman-console
-  if [ x$FOREMAN_VERSION = "x1.4" ]; then
-    tPackageInstall foreman-libvirt foreman-vmware foreman-ovirt foreman-gce
-  else
-    foreman-installer --no-colors -v \
-      --enable-foreman-compute-ec2 \
-      --enable-foreman-compute-gce \
-      --enable-foreman-compute-libvirt \
-      --enable-foreman-compute-openstack \
-      --enable-foreman-compute-ovirt \
-      --enable-foreman-compute-rackspace \
-      --enable-foreman-compute-vmware
-  fi
-}
-
-@test "check web app is still up" {
-  curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
-}
-
-@test "restart foreman" {
-  touch ~foreman/tmp/restart.txt
-}
-
-@test "install CLI (hammer)" {
-  if [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ]; then
-    tPackageInstall foreman-cli
-  else
-    foreman-installer --no-colors -v \
-      --enable-foreman-cli
-  fi
-}
-
-@test "check smart proxy is registered" {
-  count=$(hammer $(tHammerCredentials) --csv proxy list | wc -l)
-  [ $count -gt 1 ]
-}
-
-@test "check host is registered" {
-  hammer $(tHammerCredentials) host info --name $(hostname -f) | egrep "Last report:.*[[:alnum:]]+"
-}
-
-# ENC / Puppet class apply tests
-@test "install puppet module" {
-  if [ ! -d /etc/puppet/environments/production/modules/ntp ]; then
-    if [ "x${OS_RELEASE}" != "xprecise" ]; then
-      puppet module install -i /etc/puppet/environments/production/modules -v 3.0.3 puppetlabs/ntp
-    else
-      # no PMT support in 2.7.11
-      curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-ntp-3.0.3.tar.gz | \
-        (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-ntp* ntp)
-      curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-stdlib-4.3.2.tar.gz | \
-        (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-stdlib* stdlib)
-    fi
-  fi
-  [ -e /etc/puppet/environments/production/modules/ntp/manifests/init.pp ]
-}
-
-@test "import ntp puppet class" {
-  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
-  id=$(hammer $(tHammerCredentials) --csv proxy list | tail -n1 | cut -d, -f1)
-  hammer $(tHammerCredentials) proxy import-classes --id $id
-  count=$(hammer $(tHammerCredentials) --csv puppet-class list --search 'name = ntp' | wc -l)
-  [ $count -gt 1 ]
-}
-
-@test "assign puppet class to host" {
-  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
-  id=$(hammer $(tHammerCredentials) --csv puppet-class list --search 'name = ntp' | tail -n1 | cut -d, -f1)
-  pc_ids=$(hammer $(tHammerCredentials) host update --help | awk '/class-ids/ {print $1}')
-  hammer $(tHammerCredentials) host update $pc_ids $id --name $(hostname -f)
-}
-
-@test "apply class with puppet agent" {
-  [ x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.5+"
-  puppet agent -v -o --no-daemonize
-  grep -i puppet /etc/ntp.conf
-}
-
-@test "set default root password to 'redhat'" {
-  echo 'Setting["root_pass"] = "$1$redhat$9yxjZID8FYVlQzHGhasqW/"' | foreman-rake console
-}
-
-@test "set idle timeout" {
-  echo 'Setting["idle_timeout"] = 9999' | foreman-rake console
-}
-
-@test "set entries per page" {
-  echo 'Setting["entries_per_page"] = 100' | foreman-rake console
+  foreman-installer --no-colors -v \
+    --enable-foreman-compute-ec2 \
+    --enable-foreman-compute-gce \
+    --enable-foreman-compute-libvirt \
+    --enable-foreman-compute-openstack \
+    --enable-foreman-compute-ovirt \
+    --enable-foreman-compute-rackspace \
+    --enable-foreman-compute-vmware
 }
 
 # Cleanup

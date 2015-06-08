@@ -39,6 +39,11 @@ The following environment variables can be specified:
 * `FOREMAN_USE_ORGANIZATIONS`: whether to use organizations or not (value can be true/false)
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
 
+### Foreman Puppet integration test (fb-puppet-tests.bats)
+
+This tests that the Puppet agent and master are functioning and that Foreman can
+import and assign classes for the agent to apply.
+
 ### Puppet Labs Puppet installation (fb-install-plpuppet.bats)
 
 It configures Puppet Labs's distribution of Puppet and should be run before

@@ -172,3 +172,7 @@ EOP
     --puppet-ca-proxy-id 1 \
     --environment production
 }
+
+@test "set default root password to 'foreman'" {
+  echo 'Setting["root_pass"] = "$1$qudcAKx2$.CFQlnjI8tZysDA9/d9wR/"' | foreman-rake console
+}
