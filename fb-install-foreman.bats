@@ -161,8 +161,9 @@ EOF
   curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
 }
 
-@test "wake up puppet agent" {
-  puppet agent -t -v
+@test "check smart proxy is registered and Hammer runs" {
+  count=$(hammer $(tHammerCredentials) --csv proxy list | wc -l)
+  [ $count -gt 1 ]
 }
 
 @test "install all compute resources" {
@@ -175,6 +176,10 @@ EOF
     --enable-foreman-compute-ovirt \
     --enable-foreman-compute-rackspace \
     --enable-foreman-compute-vmware
+}
+
+@test "check web app is up after CR installation" {
+  curl -sk "https://localhost$URL_PREFIX/users/login" | grep -q login-form
 }
 
 # Cleanup
