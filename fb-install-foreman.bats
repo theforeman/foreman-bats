@@ -137,9 +137,12 @@ EOF
 }
 
 @test "run the installer" {
-  args="--no-colors -v ${FOREMAN_USE_LOCATIONS:+--foreman-locations-enabled=$FOREMAN_USE_LOCATIONS} ${FOREMAN_USE_ORGANIZATIONS:+--foreman-organizations-enabled=$FOREMAN_USE_ORGANIZATIONS}"
-  [ x$FOREMAN_VERSION = "x1.7" -o x$FOREMAN_VERSION = "x1.8" ] || args="${args} --foreman-logging-level=debug"
-  foreman-installer --foreman-admin-password=admin $args
+  args="--no-colors -v --foreman-admin-password=admin"
+  [ -n "${FOREMAN_USE_LOCATIONS}" ] && args+=" --foreman-locations-enabled=${FOREMAN_USE_LOCATIONS}"
+  [ -n "${FOREMAN_USE_ORGANIZATIONS}" ] && args+=" --foreman-organizations-enabled=${FOREMAN_USE_ORGANIZATIONS}"
+  [ -n "${FOREMAN_DB_TYPE}" ] && args+=" --foreman-db-type=${FOREMAN_DB_TYPE}"
+  [ x$FOREMAN_VERSION = "x1.7" -o x$FOREMAN_VERSION = "x1.8" ] || args+=" --foreman-logging-level=debug"
+  foreman-installer $args
 }
 
 @test "check for no changes when running the installer" {

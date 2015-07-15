@@ -36,6 +36,7 @@ The following environment variables can be specified:
 * `FOREMAN_CUSTOM_URL`: custom repo URL to configure, overrides use of
   `FOREMAN_REPO` for the main Foreman URL
 * `MODULE_PATH`: override the location of modules used for installation
+* `FOREMAN_DB_TYPE`: database type (value can be postgresql (default)/mysql/sqlite)
 * `FOREMAN_USE_ORGANIZATIONS`: whether to use organizations or not (value can be true/false)
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
 
