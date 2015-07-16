@@ -87,6 +87,13 @@ To use nested KVM you only need to do this on the *host* machine:
 You can either restart your host machine, or `modprobe kvm-intel` and
 restarting libvirtd daemon.
 
+### umask configuration (fb-setup-umask.bats)
+
+This changes the system-wide umask for new shells in order to run other tests
+under stricter or different defaults.
+
+* `FOREMAN_UMASK`: umask value, e.g. `077`
+
 ## Vagrant support
 
 A Vagrantfile is supplied with multi-OS support.  This will transfer
