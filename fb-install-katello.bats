@@ -31,7 +31,7 @@ setup() {
 
 @test "run katello-deploy" {
   cd katello-deploy/
-  ./setup.rb --version $KATELLO_VERSION --installer-options "--foreman-admin-password admin"
+  ./setup.rb --version $KATELLO_VERSION --installer-options "--foreman-admin-password ${KATELLO_ADMIN_PASSWORD:-admin}"
 }
 
 @test "wait 10 seconds" {
