@@ -39,6 +39,7 @@ The following environment variables can be specified:
 * `FOREMAN_DB_TYPE`: database type (value can be postgresql (default)/mysql/sqlite)
 * `FOREMAN_USE_ORGANIZATIONS`: whether to use organizations or not (value can be true/false)
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
+* `FOREMAN_ADMIN_PASSWORD`: initial admin password (defaults to "admin")
 
 ### Foreman Puppet integration test (fb-puppet-tests.bats)
 
