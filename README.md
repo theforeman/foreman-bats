@@ -41,6 +41,10 @@ The following environment variables can be specified:
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
 * `FOREMAN_ADMIN_PASSWORD`: initial admin password (defaults to "admin")
 
+Example case:
+
+    firt-spawn -n mysat6 -r 4800 -t rhel7 -d rhel-7.1 --script fb-install-sat6.bats -- CDN_USER=tester123 CDN_PASS=supERseCRET
+
 ### Foreman Puppet integration test (fb-puppet-tests.bats)
 
 This tests that the Puppet agent and master are functioning and that Foreman can
@@ -95,6 +99,19 @@ This changes the system-wide umask for new shells in order to run other tests
 under stricter or different defaults.
 
 * `FOREMAN_UMASK`: umask value, e.g. `077`
+
+### Satellite 6 installation test
+
+Similar to Katello installation test, but installs Satellite 6 from Red Hat
+CDN. Only works on RHEL platforms 6 and 7 and CDN credentials must be
+provided. Supported variables:
+
+* `CDN_USER` - Red Hat subscription username (required)
+* `CDN_PASS` - Red Hat subscription password (required)
+* `SAT_PASSWORD` - initial Satellite 6 password (also sets root password)
+* `VLANID1` and `2` - provisioning VLAN IDs (randomly selected by default)
+* `SAT_ORG` - initial organization
+* `SAT_LOC` - initial location
 
 ## Vagrant support
 

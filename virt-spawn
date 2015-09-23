@@ -205,13 +205,10 @@ $(for ix in ${!EXPORTS[*]}; do printf "%s\n" "${EXPORTS[$ix]}"; done)
 export HOME=/root
 cd \$HOME
 type restorecon && restorecon -RvvF .ssh
-while ! ping -c1 -w10 8.8.8.8 &>/dev/null; do true; done
+while ! ping -c5 -w30 8.8.8.8 &>/dev/null; do true; done
+bash -x <(curl -ks https://raw.githubusercontent.com/$BATS_REPOOWNER/foreman-bats/$BATS_BRANCH/bootstrap.sh)
 set -x
-type git || yum -y install git || (apt-get update && apt-get -y install git)
-git clone https://github.com/sstephenson/bats.git && bats/install.sh /usr/local
-git clone https://github.com/$BATS_REPOOWNER/foreman-bats.git -b $BATS_BRANCH && foreman-bats/install.sh /usr/local
-git clone https://github.com/lzap/bin-public.git
-export PATH=/usr/local/bin:/root/bin-public:\$PATH
+export PATH=/usr/local/bin:\$PATH
 [[ -n "\$KOJI_BUILD" ]] && fb-setup-koji.bats
 $(export IFS=$'\n'; echo "${SCRIPTS[*]}")
 EOFBS
