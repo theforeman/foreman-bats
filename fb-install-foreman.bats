@@ -96,6 +96,7 @@ setup() {
 @test "configure repository" {
   if tIsRedHatCompatible; then
     if [ -n "$FOREMAN_CUSTOM_URL" ]; then
+      # use a temporary repo definition as the foreman-release EVR isn't known
       cat > /etc/yum.repos.d/foreman-custom.repo <<EOF
 [foreman-custom]
 name=foreman-custom
@@ -104,7 +105,10 @@ gpgcheck=0
 baseurl=${FOREMAN_CUSTOM_URL}
 EOF
       rpm -q foreman-release || yum -y install foreman-release
-      yum-config-manager --disable foreman
+
+      # switch back to the newly installed repo definition to inherit its GPG settings
+      yum-config-manager --disable foreman-custom
+      sed -i "s|^baseurl.*|baseurl=${FOREMAN_CUSTOM_URL}|" /etc/yum.repos.d/foreman.repo
     else
       rpm -q foreman-release || yum -y install $FOREMAN_URL
     fi
