@@ -105,6 +105,7 @@ Example:
 USAGE
 }
 
+ACTION=build
 NAME=nightly
 DOMAIN=local.lan
 DISTRO=centos-6
@@ -138,7 +139,7 @@ while [ $# -gt 0 ]; do
     --build-opts) BUILD_OPTS="$2" ; shift ;;
     --pub-key) PUBKEY="$2" ; shift ;;
     --script) SCRIPTS+=("$2") ; shift ;;
-    --install-deps) sudo yum -y install openssl virt-install libguestfs libguestfs-tools util-linux sudo libxml2 fortune-mod; exit 0 ;;
+    --install-deps) ACTION=installdeps ; shift ;;
     --no-sudo) SUDO='' ;;
     --force|-f) FORCE=1 ;;
     --help|-h) usage;  exit ;;
@@ -148,6 +149,12 @@ while [ $# -gt 0 ]; do
     esac
     shift
 done
+
+if [ $ACTION = installdeps ]; then
+  echo "Installing virtualization dependencies"
+  $SUDO yum -y install openssl virt-install libguestfs libguestfs-tools util-linux sudo libxml2 fortune-mod
+  exit 0
+fi
 
 echo "Parsing extra arguments"
 EXPORTS=()
