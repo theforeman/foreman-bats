@@ -63,6 +63,18 @@ setup() {
   tPackageInstall ovirt-engine ovirt-engine-setup-plugin-allinone
 }
 
+@test "workarounds for known issues" {
+  if tIsRedHatCompatible; then
+    # system must be always up-to-date
+    yum -y upgrade
+    # http://bugzilla.redhat.com/1171603
+    systemctl restart rpcbind.service
+    # http://bugzilla.redhat.com/1250376
+    tPackageInstall virt-v2v
+  fi
+  true
+}
+
 @test "run the installer (credentials: admin@internal/ovirt)" {
   cat >/tmp/ovirt-answer-file.conf <<EOAF
 # action=setup
@@ -103,6 +115,7 @@ OVESETUP_PKI/organization=str:TestOrganization
 OVESETUP_PROVISIONING/postgresProvisioningEnabled=bool:True
 OVESETUP_SYSTEM/memCheckEnabled=bool:True
 OVESETUP_SYSTEM/nfsConfigEnabled=bool:True
+OVESETUP_VMCONSOLE_PROXY_CONFIG/vmconsoleProxyConfig=bool:True
 EOAF
   engine-setup --config-append=/tmp/ovirt-answer-file.conf
 }
