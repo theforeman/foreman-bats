@@ -250,6 +250,7 @@ $SUDO virt-builder $DISTRO \
 echo "Spawning new VM with MAC address $MAC"
 $SUDO virt-install --import \
   --cpu host \
+  --vcpus $(nproc) \
   --os-variant $OSVARIANT \
   --name $FQDN \
   --ram $RAM \
