@@ -70,7 +70,7 @@ setup() {
     # http://bugzilla.redhat.com/1171603
     systemctl restart rpcbind.service
     # http://bugzilla.redhat.com/1250376
-    tPackageInstall virt-v2v
+    tPackageAvailable virt-v2v && tPackageInstall virt-v2v
   fi
   true
 }
@@ -88,6 +88,8 @@ OVESETUP_APACHE/configureRootRedirection=bool:True
 OVESETUP_APACHE/configureSsl=bool:True
 OVESETUP_CONFIG/adminPassword=str:ovirt
 OVESETUP_CONFIG/applicationMode=str:both
+OVESETUP_CONFIG/engineDbBackupDir=str:/var/lib/ovirt-engine/backups
+OVESETUP_CONFIG/firewallChangesReview=bool:False
 OVESETUP_CONFIG/firewallManager=str:iptables
 OVESETUP_CONFIG/fqdn=str:$(hostname -f)
 OVESETUP_CONFIG/isoDomainACL=str:0.0.0.0/0.0.0.0(rw)
@@ -96,16 +98,20 @@ OVESETUP_CONFIG/isoDomainName=str:ISO_DOMAIN
 OVESETUP_CONFIG/remoteEngineHostRootPassword=none:None
 OVESETUP_CONFIG/remoteEngineHostSshPort=none:None
 OVESETUP_CONFIG/remoteEngineSetupStyle=none:None
+OVESETUP_CONFIG/sanWipeAfterDelete=bool:True
 OVESETUP_CONFIG/storageIsLocal=bool:False
 OVESETUP_CONFIG/storageType=str:nfs
 OVESETUP_CONFIG/updateFirewall=bool:True
 OVESETUP_CONFIG/websocketProxyConfig=bool:True
 OVESETUP_CORE/engineStop=none:None
 OVESETUP_DB/database=str:engine
+OVESETUP_DB/dumper=str:pg_custom
+OVESETUP_DB/filter=none:None
 OVESETUP_DB/fixDbViolations=none:None
 OVESETUP_DB/host=str:localhost
 OVESETUP_DB/password=str:R3f527AblD9vA0Tk5xiGQb
 OVESETUP_DB/port=int:5432
+OVESETUP_DB/restoreJobs=int:2
 OVESETUP_DB/secured=bool:False
 OVESETUP_DB/securedHostValidation=bool:False
 OVESETUP_DB/user=str:engine
@@ -120,33 +126,9 @@ EOAF
   engine-setup --config-append=/tmp/ovirt-answer-file.conf
 }
 
-@test "setup SCL and Foreman repos" {
-  tIsRedHatCompatible || skip "Not needed"
-  cat >/etc/yum.repos.d/scl-ruby193.repo <<SCLREPO
-[scl-ruby193]
-name=SCL ruby193
-baseurl=https://www.softwarecollections.org/repos/rhscl/ruby193/epel-$OS_VERSION-\$basearch/
-enabled=1
-gpgcheck=0
-SCLREPO
-
-  cat >/etc/yum.repos.d/foreman.repo<<FOREPO
-[foreman-nightly]
-name=Foreman Nightly
-baseurl=http://yum.theforeman.org/nightly/el$OS_VERSION/\$basearch/
-enabled=1
-gpgcheck=0
-FOREPO
-}
-
-@test "install ruby193 and dependencies" {
-  if tIsRHEL; then
-    tPackageInstall ruby193-rubygem-rails ruby193-rubygem-rspec* ruby193-rubygem-rake ruby193-rubygem-nokogiri ruby193-rubygem-rest-client
-  elif tIsFedoraCompatible; then
-    tPackageInstall rubygem-rails rubygem-rspec* rubygem-rake rubygem-nokogiri rubygem-rest-client
-  else
-    skip "Not supported on this distro, install deps manually"
-  fi
+@test "create answer file diff" {
+  cat /var/lib/ovirt-engine/setup/answers/*setup.conf | sort -u >/tmp/ovirt-answer-new.conf
+  diff /tmp/ovirt-answer-file.conf /tmp/ovirt-answer-new.conf > /tmp/ovirt-answer-diff.txt
 }
 
 @test "perform integration tests" {
@@ -161,11 +143,14 @@ datacenter: "local_datacenter"
 cluster: "local_cluster"
 network: "ovirtmgmt"
 ENDPOINT
-  pushd rbovirt
-  if tIsRHEL; then
-    scl enable ruby193 "rake spec --trace"
-  else
+  if tIsRedHatCompatible; then
+    tPackageInstall rubygems ruby-devel libxml2-devel
+    pushd rbovirt
+    gem install bundler
+    bundle install
     rake spec --trace
+    popd
+  else
+    skip "Not supported on this distro, install deps manually"
   fi
-  popd
 }
