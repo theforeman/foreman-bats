@@ -50,7 +50,7 @@ tIsFedora() {
 
 tIsRHEL() {
   if [ -z "$1" ]; then
-    tIsRedHatCompatible
+    tIsRedHatCompatible && ! tIsFedoraCompatible
   else
     tSetOSVersion
     tIsRedHatCompatible && [[ "$1" -eq "$OS_VERSION" ]]
