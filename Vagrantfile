@@ -8,6 +8,7 @@ boxes = [
   {:name => 'jessie',   :libvirt => 'fm-debian8',    :image_name => 'Debian.*Jessie', :os_user => 'debian'},
   {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => 'Fedora.*19',                 :pty => true},
   {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => 'Fedora.*20',                 :pty => true},
+  {:name => 'f21',      :libvirt => 'fm-fedora21',   :image_name => 'Fedora.*21',                 :pty => true},
   {:name => 'el6',      :libvirt => 'fm-centos64',   :image_name => 'CentOS 6', :default => true, :pty => true},
   {:name => 'el7',      :libvirt => 'fm-centos70',   :image_name => 'CentOS 7', :default => true, :pty => true},
 ]
