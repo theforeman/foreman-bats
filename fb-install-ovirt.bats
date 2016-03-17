@@ -131,7 +131,7 @@ EOAF
   diff /tmp/ovirt-answer-file.conf /tmp/ovirt-answer-new.conf > /tmp/ovirt-answer-diff.txt
 }
 
-@test "perform integration tests" {
+@test "prepare integration tests" {
   # some integration tests are longish and http timeouts
   export RBOVIRT_REST_TIMEOUT=500
   test -d rbovirt || git clone https://github.com/abenari/rbovirt
@@ -148,9 +148,28 @@ ENDPOINT
     pushd rbovirt
     gem install bundler
     bundle install
-    rake spec --trace
     popd
   else
     skip "Not supported on this distro, install deps manually"
   fi
+}
+
+@test "perform integration tests against master" {
+  if ! tIsRedHatCompatible; then
+    skip "Not supported on this distro"
+  fi
+  pushd rbovirt
+  git checkout master
+  run rake spec --trace
+  popd
+}
+
+@test "perform integration tests against stable-0.0" {
+  if ! tIsRedHatCompatible; then
+    skip "Not supported on this distro"
+  fi
+  pushd rbovirt
+  git checkout stable-0.0
+  run rake spec --trace
+  popd
 }
