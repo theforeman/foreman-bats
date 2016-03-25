@@ -26,7 +26,11 @@ Vagrant.configure("2") do |config|
 
       machine.vm.provider :libvirt do |p, override|
         override.vm.box = "#{box[:libvirt]}"
-        override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{box[:libvirt].sub(/^fm-/, '')}.box"
+        if box[:libvirt] == 'fm_centos70' 
+          override.vm.box_url = 'https://download.gluster.org/pub/gluster/purpleidea/vagrant/centos-7.0/centos-7.0.box'
+        else
+          override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{box[:libvirt].sub(/^fm-/, '')}.box"
+        end
         p.memory = 1024
       end
 
