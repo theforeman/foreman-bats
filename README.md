@@ -51,7 +51,7 @@ import and assign classes for the agent to apply.
 It configures Puppet Labs's distribution of Puppet and should be run before
 installing Foreman.  The following environment variables can be specified:
 
-* `PUPPET_REPO`: either "nightly" or "stable" (default)
+* `PUPPET_REPO`: either "nightly", "pc1" or "stable" (default)
 
 ### Foreman Hammer CLI smoke test (fb-hammer-tests.bats)
 
