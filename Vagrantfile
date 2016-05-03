@@ -3,6 +3,7 @@
 boxes = [
   {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :image_name => 'Ubuntu.*12\.04', :os_user => 'ubuntu'},
   {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => 'Ubuntu.*14\.04', :os_user => 'ubuntu'},
+  {:name => 'xenial',   :libvirt => 'fm-ubuntu1604', :image_name => 'Ubuntu.*16\.04', :os_user => 'ubuntu'},
   {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => 'Debian.*6',      :os_user => 'debian'},
   {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => 'Debian.*7',      :os_user => 'debian'},
   {:name => 'jessie',   :libvirt => 'fm-debian8',    :image_name => 'Debian.*Jessie', :os_user => 'debian'},
