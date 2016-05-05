@@ -44,20 +44,20 @@ load os_helper
   tSetOSVersion
   tPackageExists curl || tPackageInstall curl
   if tIsFedora; then
-    curl -o /etc/yum.repos.d/puppet-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-fedora-f${OS_VERSION}-$(uname -i).repo
-    curl -o /etc/yum.repos.d/facter-nightlies.repo \
-      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-fedora-f${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/puppet-agent-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-fedora-f${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/puppetserver-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-fedora-f${OS_VERSION}-$(uname -i).repo
   elif tIsRHEL; then
-    curl -o /etc/yum.repos.d/puppet-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/rpm/pl-puppet-latest-el-${OS_VERSION}-$(uname -i).repo
-    curl -o /etc/yum.repos.d/facter-nightlies.repo \
-      http://nightlies.puppetlabs.com/facter-latest/repo_configs/rpm/pl-facter-latest-el-${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/puppet-agent-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-el-${OS_VERSION}-$(uname -i).repo
+    curl -o /etc/yum.repos.d/puppetserver-nightlies.repo \
+      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-el-${OS_VERSION}-$(uname -i).repo
   elif tIsDebianCompatible; then
-    curl -o /etc/apt/sources.list.d/puppet-nightlies.list \
-      http://nightlies.puppetlabs.com/puppet-latest/repo_configs/deb/pl-puppet-latest-${OS_RELEASE}.list
-    curl -o /etc/apt/sources.list.d/facter-nightlies.list \
-      http://nightlies.puppetlabs.com/facter-latest/repo_configs/deb/pl-facter-latest-${OS_RELEASE}.list
+    curl -o /etc/apt/sources.list.d/puppet-agent-nightlies.list \
+      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/deb/pl-puppet-agent-latest-${OS_RELEASE}.list
+    curl -o /etc/apt/sources.list.d/puppetserver-nightlies.list \
+      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/deb/pl-puppetserver-latest-${OS_RELEASE}.list
     apt-get update
   fi
 }
