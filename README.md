@@ -116,6 +116,9 @@ platforms:
         vagrant ssh $vm -c 'sudo MODULE_PATH=/vagrant/local/modules /vagrant/fb-install-foreman.bats'
     done
 
+The size of the VM created by Vagrant depends on the value of the `PUPPET_REPO`
+environment variable, so export it when running `vagrant up`.
+
 ## Support for virt-builder/virt-install
 
 This git repo comes with a virt-spawn wrapper script around virt-builder and

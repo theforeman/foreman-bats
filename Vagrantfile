@@ -17,6 +17,16 @@ if ENV['box']
   boxes << {:name => ENV['box'], :libvirt => ENV['box'], :image_name => ENV['box'], :os_user => ENV['box']}
 end
 
+if ['pc1', 'nightly'].include?(ENV['PUPPET_REPO'])
+  memory_lv = 4096
+  memory_rs = '4 GB'
+  memory_os = 'm1.medium'
+else
+  memory_lv = 2048
+  memory_rs = '2 GB'
+  memory_os = 'm1.small'
+end
+
 Vagrant.configure("2") do |config|
   boxes.each do |box|
     config.vm.define box[:name], primary: box[:default] do |machine|
@@ -27,13 +37,13 @@ Vagrant.configure("2") do |config|
       machine.vm.provider :libvirt do |p, override|
         override.vm.box = "#{box[:libvirt]}"
         override.vm.box_url = "http://m0dlx.com/files/foreman/boxes/#{box[:libvirt].sub(/^fm-/, '')}.box"
-        p.memory = 1024
+        p.memory = memory_lv
       end
 
       machine.vm.provider :rackspace do |p, override|
         override.vm.box = 'dummy'
         p.server_name = machine.vm.hostname
-        p.flavor = /2 GB Performance/
+        p.flavor = /#{memory_rs} Performance/
         p.image = Regexp.new(box[:image_name] + '.*PV')
         override.ssh.pty = true if box[:pty]
       end
@@ -44,7 +54,7 @@ Vagrant.configure("2") do |config|
       config.vm.provider :openstack do |p, override|
         override.vm.box = 'dummy'
         p.server_name   = machine.vm.hostname
-        p.flavor        = /m1.tiny/
+        p.flavor        = Regexp.new(memory_os)
         p.image         = Regexp.new(box[:image_name]) # Might as well use consistent image names
         p.ssh_username  = box[:os_user]  # login for the VM
 
