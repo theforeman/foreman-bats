@@ -21,6 +21,33 @@ setup() {
   [ $count -gt 1 ]
 }
 
+@test "assert puppet version" {
+  if [ x$PUPPET_REPO = xstable ]; then
+    tPackageExists puppet
+    # check 'puppet' package is built by PL
+    if tIsDebianCompatible; then
+      dpkg-query --show -f '${Maintainer}' puppet | grep 'Puppet Labs'
+    elif tIsRedHatCompatible; then
+      rpm -q --qf '%{VENDOR}' puppet | grep 'Puppet Labs'
+    fi
+  elif [ x$PUPPET_REPO = xpc1 -o x$PUPPET_REPO = xnightly ]; then
+    tPackageExists puppet-agent
+    # check 'puppet-agent' package is built by PL
+    if tIsDebianCompatible; then
+      dpkg-query --show -f '${Maintainer}' puppet-agent | grep 'Puppet Labs'
+    elif tIsRedHatCompatible; then
+      rpm -q --qf '%{VENDOR}' puppet-agent | grep 'Puppet Labs'
+    fi
+  else  # OS package
+    tPackageExists puppet
+    if tIsDebianCompatible; then
+      dpkg-query --show -f '${Maintainer}' puppet | grep -v 'Puppet Labs'
+    elif tIsRedHatCompatible; then
+      rpm -q --qf '%{VENDOR}' puppet | grep -v 'Puppet Labs'
+    fi
+  fi
+}
+
 @test "wake up puppet agent" {
   puppet agent -t -v
 }
