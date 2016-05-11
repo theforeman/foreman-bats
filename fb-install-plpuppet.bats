@@ -58,6 +58,7 @@ load os_helper
       http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/deb/pl-puppet-agent-latest-${OS_RELEASE}.list
     curl -o /etc/apt/sources.list.d/puppetserver-nightlies.list \
       http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/deb/pl-puppetserver-latest-${OS_RELEASE}.list
+    apt-key adv --keyserver pgp.mit.edu --recv-keys 8735F5AF62A99A628EC13377B8F999C007BB6C57
     apt-get update
   fi
 }
