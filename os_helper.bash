@@ -117,6 +117,50 @@ tPackageVersion() {
   fi
 }
 
+tServiceDisable() {
+  if tCommandExists systemctl; then
+    systemctl disable "$1"
+  else
+    if tIsRedHatCompatible; then
+      chkconfig "$1" off
+    elif tIsDebianCompatible; then
+      update-rc.d "$1" disable
+    else
+      false # not implemented
+    fi
+  fi
+}
+
+tServiceEnable() {
+  if tCommandExists systemctl; then
+    systemctl enable "$1"
+  else
+    if tIsRedHatCompatible; then
+      chkconfig "$1" on
+    elif tIsDebianCompatible; then
+      update-rc.d "$1" enable
+    else
+      false # not implemented
+    fi
+  fi
+}
+
+tServiceStart() {
+  if tCommandExists systemctl; then
+    systemctl start "$1"
+  else
+    service "$1" start
+  fi
+}
+
+tServiceStop() {
+  if tCommandExists systemctl; then
+    systemctl stop "$1"
+  else
+    service "$1" stop
+  fi
+}
+
 tCommandExists() {
   type -p "$1" >/dev/null
 }

@@ -9,11 +9,10 @@ load foreman_helper
 @test "install and configure libvirt daemon" {
   if tIsRedHatCompatible; then
     tPackageExists qemu-kvm || yum -y groupinstall Virtualization
-    tPackageExists libvirt || yum -y install libvirt
-    service libvirtd start
-    chkconfig libvirtd on
+    tPackageExists libvirt || tPackageInstall libvirt
+    tServiceStart libvirtd; tServiceEnable libvirtd
   elif tIsDebianCompatible; then
-    apt-get install qemu-kvm libvirt-bin
+    tPackageInstall qemu-kvm libvirt-bin
   fi
 
   echo 'auth_unix_rw = "none"' >> /etc/libvirt/libvirtd.conf
