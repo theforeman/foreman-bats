@@ -24,14 +24,10 @@ setup() {
   fi
 
   # disable firewall
-  if tIsRedHatCompatible; then
-    if tFileExists /usr/sbin/firewalld; then
-      systemctl stop firewalld; systemctl disable firewalld
-    elif tCommandExists systemctl; then
-      systemctl stop iptables; systemctl disable iptables
-    else
-      service iptables stop; chkconfig iptables off
-    fi
+  if tFileExists /usr/sbin/firewalld; then
+    tServiceStop firewalld; tServiceDisable firewalld
+  else
+    tServiceStop iptables; tServiceDisable iptables
   fi
 
   tPackageExists curl || tPackageInstall curl
@@ -42,13 +38,8 @@ setup() {
 
 @test "stop puppet agent (if installed)" {
   tPackageExists "puppet" || skip "Puppet package not installed"
-  if tIsRHEL 6; then
-    service puppet stop; chkconfig puppet off
-  elif tIsFedora; then
-    service puppetagent stop; chkconfig puppetagent off
-  elif tIsDebianCompatible; then
-    service puppet stop
-  fi
+  tServiceStop puppet
+  tServiceDisable puppet
   true
 }
 

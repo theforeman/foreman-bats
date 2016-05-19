@@ -13,16 +13,14 @@ setup() {
 
 @test "disable firewall" {
   if tFileExists /usr/sbin/firewalld; then
-    systemctl stop firewalld; systemctl disable firewalld
-  elif tCommandExists systemctl; then
-    systemctl stop iptables; systemctl disable iptables
+    tServiceStop firewalld; tServiceDisable firewalld
   else
-    service iptables stop; chkconfig iptables off
+    tServiceStop iptables; tServiceDisable iptables
   fi
 }
 
 @test "install git and utilities" {
-  yum install -y git ruby curl screen
+  tPackageInstall git ruby curl screen
 }
 
 @test "clone katello-deploy repo" {

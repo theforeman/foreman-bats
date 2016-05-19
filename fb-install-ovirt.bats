@@ -11,14 +11,10 @@ setup() {
   tSetOSVersion
 
   # disable firewall
-  if tIsRedHatCompatible; then
-    if tFileExists /usr/sbin/firewalld; then
-      systemctl stop firewalld; systemctl disable firewalld
-    elif tCommandExists systemctl; then
-      systemctl stop iptables; systemctl disable iptables
-    else
-      service iptables stop; chkconfig iptables off
-    fi
+  if tFileExists /usr/sbin/firewalld; then
+    tServiceStop firewalld; tServiceDisable firewalld
+  else
+    tServiceStop iptables; tServiceDisable iptables
   fi
 
   tPackageExists curl || tPackageInstall curl
