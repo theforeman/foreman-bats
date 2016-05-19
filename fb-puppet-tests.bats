@@ -58,18 +58,23 @@ setup() {
 
 # ENC / Puppet class apply tests
 @test "install puppet module" {
-  if [ ! -d /etc/puppet/environments/production/modules/ntp ]; then
+  modpath=/etc/puppetlabs/code/environments/production/modules
+  if [ ! -d $modpath -a -e /etc/puppet/environments/production/modules ]; then
+    modpath=/etc/puppet/environments/production/modules
+  fi
+
+  if [ ! -d $modpath/ntp ]; then
     if [ "x${OS_RELEASE}" != "xprecise" ]; then
-      puppet module install -i /etc/puppet/environments/production/modules -v 3.0.3 puppetlabs/ntp
+      puppet module install -i $modpath -v 3.0.3 puppetlabs/ntp
     else
       # no PMT support in 2.7.11
       curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-ntp-3.0.3.tar.gz | \
-        (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-ntp* ntp)
+        (cd $modpath && tar zxf - && mv puppetlabs-ntp* ntp)
       curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-stdlib-4.3.2.tar.gz | \
-        (cd /etc/puppet/environments/production/modules && tar zxf - && mv puppetlabs-stdlib* stdlib)
+        (cd $modpath && tar zxf - && mv puppetlabs-stdlib* stdlib)
     fi
   fi
-  [ -e /etc/puppet/environments/production/modules/ntp/manifests/init.pp ]
+  [ -e $modpath/ntp/manifests/init.pp ]
 }
 
 @test "import ntp puppet class" {
