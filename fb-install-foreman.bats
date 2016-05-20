@@ -27,7 +27,8 @@ setup() {
   if tFileExists /usr/sbin/firewalld; then
     tServiceStop firewalld; tServiceDisable firewalld
   else
-    tServiceStop iptables; tServiceDisable iptables
+    tServiceStop iptables || true  # ignore if missing
+    tServiceDisable iptables || true
   fi
 
   tPackageExists curl || tPackageInstall curl
