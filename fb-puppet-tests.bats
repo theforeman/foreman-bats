@@ -65,10 +65,10 @@ setup() {
 
   if [ ! -d $modpath/ntp ]; then
     if [ "x${OS_RELEASE}" != "xprecise" ]; then
-      puppet module install -i $modpath -v 3.0.3 puppetlabs/ntp
+      puppet module install -i $modpath -v 3.2.0 puppetlabs/ntp
     else
       # no PMT support in 2.7.11
-      curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-ntp-3.0.3.tar.gz | \
+      curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-ntp-3.2.0.tar.gz | \
         (cd $modpath && tar zxf - && mv puppetlabs-ntp* ntp)
       curl https://forgeapi.puppetlabs.com/v3/files/puppetlabs-stdlib-4.3.2.tar.gz | \
         (cd $modpath && tar zxf - && mv puppetlabs-stdlib* stdlib)
