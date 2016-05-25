@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
         override.vm.box = 'dummy'
         p.server_name = machine.vm.hostname
         p.flavor = /#{memory_rs} Performance/
-        p.image = Regexp.new(box[:image_name] + '.*PV')
+        p.image = Regexp.new(box[:image_name] + '.*PV(?!.*Orchestration)')
         override.ssh.pty = true if box[:pty]
       end
 
