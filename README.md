@@ -40,6 +40,8 @@ The following environment variables can be specified:
 * `FOREMAN_USE_ORGANIZATIONS`: whether to use organizations or not (value can be true/false)
 * `FOREMAN_USE_LOCATIONS`: whether to use locations or not (value can be true/false).
 * `FOREMAN_ADMIN_PASSWORD`: initial admin password (defaults to "admin")
+* `FOREMAN_EXPECTED_VERSION`: version number of Foreman and components that is expected to be
+  installed
 
 ### Foreman Puppet integration test (fb-puppet-tests.bats)
 

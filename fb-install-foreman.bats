@@ -149,6 +149,12 @@ EOF
   [ $? -eq 0 ]
 }
 
+@test "assert correct Foreman version is installed" {
+  [ -n "$FOREMAN_EXPECTED_VERSION" ] || skip "FOREMAN_EXPECTED_VERSION is not set, not asserting"
+  # prints and fails if any VERSION files don't match expected version
+  ! grep -v -H -x "$FOREMAN_EXPECTED_VERSION" /usr/share/foreman*/VERSION
+}
+
 @test "wait 10 seconds" {
   sleep 10
 }
