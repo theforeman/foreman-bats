@@ -121,6 +121,8 @@ EOP
   hammer -d os add-config-template --id 1 --config-template "Kickstart default"
   hammer -d os add-config-template --id 1 --config-template "Kickstart default finish"
   hammer -d os add-config-template --id 1 --config-template "Kickstart default PXELinux"
+  hammer -d os add-config-template --id 1 --config-template "Kickstart default PXEGrub"
+  hammer -d os add-config-template --id 1 --config-template "Kickstart default PXEGrub2"
   hammer -d os add-config-template --id 1 --config-template "Kickstart default user data"
 }
 
@@ -130,6 +132,10 @@ EOP
   tForemanGetTemplateId "Kickstart default finish" "finish"
   hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
   tForemanGetTemplateId "Kickstart default PXELinux" "PXELinux"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
+  tForemanGetTemplateId "Kickstart default PXEGrub" "PXEGrub"
+  hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
+  tForemanGetTemplateId "Kickstart default PXEGrub2" "PXEGrub2"
   hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
   tForemanGetTemplateId "Kickstart default user data" "user_data"
   hammer -d os set-default-template --id 1 --config-template-id $TPL_ID
