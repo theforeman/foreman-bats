@@ -1,12 +1,13 @@
 # vim: sw=2:ts=2:et:ft=ruby
 
 boxes = [
-  {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :image_name => 'Ubuntu.*12\.04', :os_user => 'ubuntu'},
-  {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => 'Ubuntu.*14\.04', :os_user => 'ubuntu'},
-  {:name => 'xenial',   :libvirt => 'fm-ubuntu1604', :image_name => 'Ubuntu.*16\.04', :os_user => 'ubuntu'},
-  {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => 'Debian.*6',      :os_user => 'debian'},
-  {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => 'Debian.*7',      :os_user => 'debian'},
-  {:name => 'jessie',   :libvirt => 'fm-debian8',    :image_name => 'Debian.*Jessie', :os_user => 'debian'},
+  {:name => 'precise',  :libvirt => 'fm-ubuntu1204', :image_name => 'Ubuntu.*12\.04',  :os_user => 'ubuntu'},
+  {:name => 'trusty',   :libvirt => 'fm-ubuntu1404', :image_name => 'Ubuntu.*14\.04',  :os_user => 'ubuntu'},
+  {:name => 'xenial',   :libvirt => 'fm-ubuntu1604', :image_name => 'Ubuntu.*16\.04',  :os_user => 'ubuntu'},
+  {:name => 'squeeze',  :libvirt => 'fm-debian6',    :image_name => 'Debian.*6',       :os_user => 'debian'},
+  {:name => 'wheezy',   :libvirt => 'fm-debian7',    :image_name => 'Debian.*7',       :os_user => 'debian'},
+  {:name => 'jessie',   :libvirt => 'fm-debian8',    :image_name => 'Debian.*Jessie',  :os_user => 'debian'},
+  {:name => 'stretch',  :libvirt => 'fm-debian9',    :image_name => 'Debian.*Stretch', :os_user => 'debian'},
   {:name => 'f19',      :libvirt => 'fm-fedora19',   :image_name => 'Fedora.*19',                 :pty => true},
   {:name => 'f20',      :libvirt => 'fm-fedora20',   :image_name => 'Fedora.*20',                 :pty => true},
   {:name => 'f21',      :libvirt => 'fm-fedora21',   :image_name => 'Fedora.*21',                 :pty => true},
