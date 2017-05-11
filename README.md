@@ -48,12 +48,17 @@ The following environment variables can be specified:
 This tests that the Puppet agent and master are functioning and that Foreman can
 import and assign classes for the agent to apply.
 
-### Puppet Labs Puppet installation (fb-install-plpuppet.bats)
+### Puppet installation (fb-install-puppet.bats)
 
-It configures Puppet Labs's distribution of Puppet and should be run before
-installing Foreman.  The following environment variables can be specified:
+It configures different Puppet distributions than the OS default and should be
+run before installing Foreman.  The following environment variables can be
+specified:
 
-* `PUPPET_REPO`: either "nightly", "pc1" or "stable" (default)
+* `PUPPET_REPO`: one of the following repo keywords:
+    * `backports` - packages from [Debian Backports](https://backports.debian.org/)
+    * `nightly` - packages from [nightlies.puppetlabs.com](http://nightlies.puppetlabs.com/)
+    * `pc1` - packages from [Puppet Collection 1](https://docs.puppet.com/puppet/latest/puppet_collections.html)
+    * `stable` - packages from [Puppet 3.x repositories](https://docs.puppet.com/puppet/3.8/puppet_repositories.html) (default)
 
 ### Foreman Hammer CLI smoke test (fb-hammer-tests.bats)
 

@@ -188,3 +188,10 @@ tRHEnableEPEL() {
   tPackageExists epel-release || \
     rpm -Uvh http://dl.fedoraproject.org/pub/epel/epel-release-latest-${OS_VERSION}.noarch.rpm
 }
+
+tEnableDebianBackports() {
+  tIsDebian || skip "Not applicable, non-Debian OS"
+  tSetOSVersion
+  awk -v dist=${OS_RELEASE}-backports '/^deb/ { $3 = dist; print; exit }' < /etc/apt/sources.list >> /etc/apt/sources.list
+  apt-get update
+}
