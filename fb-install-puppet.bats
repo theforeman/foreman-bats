@@ -60,6 +60,12 @@ load os_helper
       http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/deb/pl-puppetserver-latest-${OS_RELEASE}.list
     apt-key adv --keyserver pgp.mit.edu --recv-keys 8735F5AF62A99A628EC13377B8F999C007BB6C57
     apt-get update
+
+    # OpenJDK 8 from backports is required to use latest Puppet Server (SERVER-1785)
+    if [ x$OS_RELEASE = xjessie ]; then
+      tEnableDebianBackports
+      tPackageExists openjdk-8-jre-headless || tPackageInstall -t ${OS_RELEASE}-backports openjdk-8-jre-headless
+    fi
   fi
 }
 
