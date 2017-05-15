@@ -42,23 +42,17 @@ load os_helper
 @test "setup Puppet Labs nightly repos" {
   [ x${PUPPET_REPO} = xnightly ] || skip "PUPPET_REPO is not set to nightly"
   tSetOSVersion
-  tPackageExists curl || tPackageInstall curl
   if tIsFedora; then
-    curl -o /etc/yum.repos.d/puppet-agent-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-fedora-f${OS_VERSION}-$(uname -i).repo
-    curl -o /etc/yum.repos.d/puppetserver-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-fedora-f${OS_VERSION}-$(uname -i).repo
+    tPackageExists puppet5-nightly-release || \
+      rpm -ivh http://yum.puppetlabs.com/puppet5-nightly/puppet5-nightly-release-fedora-${OS_VERSION}.noarch.rpm
   elif tIsRHEL; then
-    curl -o /etc/yum.repos.d/puppet-agent-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-el-${OS_VERSION}-$(uname -i).repo
-    curl -o /etc/yum.repos.d/puppetserver-nightlies.repo \
-      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-el-${OS_VERSION}-$(uname -i).repo
+    tPackageExists puppet5-nightly-release || \
+      rpm -ivh http://yum.puppetlabs.com/puppet5-nightly/puppet5-nightly-release-el-${OS_VERSION}.noarch.rpm
   elif tIsDebianCompatible; then
-    curl -o /etc/apt/sources.list.d/puppet-agent-nightlies.list \
-      http://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/deb/pl-puppet-agent-latest-${OS_RELEASE}.list
-    curl -o /etc/apt/sources.list.d/puppetserver-nightlies.list \
-      http://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/deb/pl-puppetserver-latest-${OS_RELEASE}.list
-    apt-key adv --keyserver pgp.mit.edu --recv-keys 8735F5AF62A99A628EC13377B8F999C007BB6C57
+    if ! tPackageExists puppet5-nightly-release; then
+      wget http://apt.puppetlabs.com/puppet5-nightly-release-${OS_RELEASE}.deb
+      dpkg -i puppet5-nightly-release-${OS_RELEASE}.deb
+    fi
     apt-get update
 
     # OpenJDK 8 from backports is required to use latest Puppet Server (SERVER-1785)
