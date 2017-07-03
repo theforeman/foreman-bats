@@ -19,7 +19,7 @@ if ENV['box']
   boxes << {:name => ENV['box'], :libvirt => ENV['box'], :image_name => ENV['box'], :os_user => ENV['box']}
 end
 
-if ['pc1', 'nightly'].include?(ENV['PUPPET_REPO'])
+if ['pc1', 'puppet5', 'nightly'].include?(ENV['PUPPET_REPO'])
   memory_lv = 4096
   memory_rs = '4 GB'
   memory_os = 'm1.medium'

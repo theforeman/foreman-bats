@@ -39,6 +39,30 @@ load os_helper
   fi
 }
 
+@test "setup Puppet 5 repos" {
+  [ x${PUPPET_REPO} = xpuppet5 ] || skip "PUPPET_REPO is not set to puppet5"
+  tSetOSVersion
+  if tIsFedora; then
+    tPackageExists puppet5-release || \
+      rpm -ivh http://yum.puppetlabs.com/puppet5/puppet5-release-fedora-${OS_VERSION}.noarch.rpm
+  elif tIsRHEL; then
+    tPackageExists puppet5-release || \
+      rpm -ivh http://yum.puppetlabs.com/puppet5/puppet5-release-el-${OS_VERSION}.noarch.rpm
+  elif tIsDebianCompatible; then
+    if ! tPackageExists puppet5-release; then
+      wget http://apt.puppetlabs.com/puppet5-release-${OS_RELEASE}.deb
+      dpkg -i puppet5-release-${OS_RELEASE}.deb
+    fi
+    apt-get update
+
+    # OpenJDK 8 from backports is required to use Puppet Server 5 (SERVER-1785)
+    if [ x$OS_RELEASE = xjessie ]; then
+      tEnableDebianBackports
+      tPackageExists openjdk-8-jre-headless || tPackageInstall -t ${OS_RELEASE}-backports openjdk-8-jre-headless
+    fi
+  fi
+}
+
 @test "setup Puppet Labs nightly repos" {
   [ x${PUPPET_REPO} = xnightly ] || skip "PUPPET_REPO is not set to nightly"
   tSetOSVersion

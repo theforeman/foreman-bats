@@ -106,7 +106,7 @@ EOF
     fi
   elif tIsDebianCompatible; then
     echo "deb ${FOREMAN_CUSTOM_URL:-http://deb.theforeman.org/} ${OS_RELEASE} ${FOREMAN_REPO}" > /etc/apt/sources.list.d/foreman.list
-    # staging uses component=theforeman-nightly whereas productionuses component=nightly, so awk it
+    # staging uses component=theforeman-nightly whereas production uses component=nightly, so awk it
     echo "deb http://deb.theforeman.org/ plugins `echo ${FOREMAN_REPO} | awk -F- '{ print $NF}'`" >> /etc/apt/sources.list.d/foreman.list
     wget -q http://deb.theforeman.org/foreman.asc -O- | apt-key add -
     apt-get update

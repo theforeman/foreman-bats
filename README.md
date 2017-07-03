@@ -57,7 +57,8 @@ specified:
 * `PUPPET_REPO`: one of the following repo keywords:
     * `backports` - packages from [Debian Backports](https://backports.debian.org/)
     * `nightly` - packages from [nightlies.puppetlabs.com](http://nightlies.puppetlabs.com/)
-    * `pc1` - packages from [Puppet Collection 1](https://docs.puppet.com/puppet/latest/puppet_collections.html)
+    * `pc1` - packages from [Puppet Collection 1](https://docs.puppet.com/puppet/4.10/puppet_collections.html)
+    * `puppet5` - packages from [Puppet 5](https://docs.puppet.com/puppet/latest/puppet_platform.html)
     * `stable` - packages from [Puppet 3.x repositories](https://docs.puppet.com/puppet/3.8/puppet_repositories.html) (default)
 
 ### Foreman Hammer CLI smoke test (fb-hammer-tests.bats)

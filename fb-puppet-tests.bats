@@ -30,7 +30,7 @@ setup() {
     elif tIsRedHatCompatible; then
       rpm -q --qf '%{VENDOR}' puppet | grep 'Puppet Labs'
     fi
-  elif [ x$PUPPET_REPO = xpc1 -o x$PUPPET_REPO = xnightly ]; then
+  elif [ x$PUPPET_REPO = xpc1 -o x$PUPPET_REPO = xnightly -o x$PUPPET_REPO = xpuppet5 ]; then
     tPackageExists puppet-agent
     # check 'puppet-agent' package is built by PL
     if tIsDebianCompatible; then
