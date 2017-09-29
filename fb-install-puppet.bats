@@ -67,16 +67,16 @@ load os_helper
   [ x${PUPPET_REPO} = xnightly ] || skip "PUPPET_REPO is not set to nightly"
   tSetOSVersion
   if tIsFedora; then
-    tPackageExists puppet5-nightly-release || \
-      rpm -ivh http://yum.puppetlabs.com/puppet5-nightly/puppet5-nightly-release-fedora-${OS_VERSION}.noarch.rpm
+    wget -O /etc/yum.repos.d/puppet-agent.repo https://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-fedora-${OS_VERSION}-x86_64.repo
+    wget -O /etc/yum.repos.d/puppetserver.repo https://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-fedora-${OS_VERSION}-x86_64.repo
   elif tIsRHEL; then
-    tPackageExists puppet5-nightly-release || \
-      rpm -ivh http://yum.puppetlabs.com/puppet5-nightly/puppet5-nightly-release-el-${OS_VERSION}.noarch.rpm
+    wget -O /etc/yum.repos.d/puppet-agent.repo https://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/rpm/pl-puppet-agent-latest-el-${OS_VERSION}-x86_64.repo
+    wget -O /etc/yum.repos.d/puppetserver.repo https://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/rpm/pl-puppetserver-latest-el-${OS_VERSION}-x86_64.repo
   elif tIsDebianCompatible; then
-    if ! tPackageExists puppet5-nightly-release; then
-      wget http://apt.puppetlabs.com/puppet5-nightly-release-${OS_RELEASE}.deb
-      dpkg -i puppet5-nightly-release-${OS_RELEASE}.deb
-    fi
+    tPackageUpgrade ca-certificates
+    wget -qO- https://nightlies.puppetlabs.com/07BB6C57 | apt-key add -
+    wget -O /etc/apt/sources.list.d/puppet-agent.list https://nightlies.puppetlabs.com/puppet-agent-latest/repo_configs/deb/pl-puppet-agent-latest-${OS_RELEASE}.list
+    wget -O /etc/apt/sources.list.d/puppetserver.list https://nightlies.puppetlabs.com/puppetserver-latest/repo_configs/deb/pl-puppetserver-latest-${OS_RELEASE}.list
     apt-get update
 
     # OpenJDK 8 from backports is required to use latest Puppet Server (SERVER-1785)
