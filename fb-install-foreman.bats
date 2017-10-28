@@ -23,6 +23,10 @@ setup() {
     setenforce 0
   fi
 
+  if tIsDebianCompatible; then
+    for ip in `hostname -I` ; do echo $ip `hostname` ; done >>/etc/hosts
+  fi
+
   # disable firewall
   if tFileExists /usr/sbin/firewalld; then
     tServiceStop firewalld; tServiceDisable firewalld
