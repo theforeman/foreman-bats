@@ -105,6 +105,7 @@ EOF
       # switch back to the newly installed repo definition to inherit its GPG settings
       yum-config-manager --disable foreman-custom
       sed -i "s|^baseurl.*|baseurl=${FOREMAN_CUSTOM_URL}|" /etc/yum.repos.d/foreman.repo
+      sed -i "s|^baseurl.*|baseurl=${FOREMAN_CUSTOM_PLUGINS_URL}|" /etc/yum.repos.d/foreman-plugins.repo
     else
       rpm -q foreman-release || yum -y install $FOREMAN_URL
     fi
