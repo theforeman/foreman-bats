@@ -137,7 +137,7 @@ EOF
 }
 
 @test "run the installer" {
-  args="--no-colors -v --foreman-admin-password=${FOREMAN_ADMIN_PASSWORD:-admin}"
+  args="--no-colors -v --foreman-admin-password=${FOREMAN_ADMIN_PASSWORD:-admin} ${INSTALLER_OPTIONS}"
   [ -n "${FOREMAN_USE_LOCATIONS}" ] && args+=" --foreman-locations-enabled=${FOREMAN_USE_LOCATIONS}"
   [ -n "${FOREMAN_USE_ORGANIZATIONS}" ] && args+=" --foreman-organizations-enabled=${FOREMAN_USE_ORGANIZATIONS}"
   [ -n "${FOREMAN_DB_TYPE}" ] && args+=" --foreman-db-type=${FOREMAN_DB_TYPE}"
