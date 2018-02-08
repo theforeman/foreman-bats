@@ -150,7 +150,7 @@ EOF
   [ x$FOREMAN_VERSION = "x1.5" -o x$FOREMAN_VERSION = "x1.4" ] && skip "Only supported on 1.6+"
   tIsDebianCompatible && [ x$OS_RELEASE = xsqueeze -o x$OS_RELEASE = xprecise ] && skip "Known bug #6520"
   tIsDebianCompatible && [ x$OS_RELEASE = xjessie -o x$OS_RELEASE = xxenial ] && skip "Known Puppet bug PUP-4430"
-  foreman-installer --no-colors -v --detailed-exitcodes
+  foreman-installer --no-colors -v --detailed-exitcodes $INSTALLER_OPTIONS
   [ $? -eq 0 ]
 }
 
@@ -182,7 +182,8 @@ EOF
     --enable-foreman-compute-openstack \
     --enable-foreman-compute-ovirt \
     --enable-foreman-compute-rackspace \
-    --enable-foreman-compute-vmware
+    --enable-foreman-compute-vmware \
+    $INSTALLER_OPTIONS
 }
 
 @test "check web app is up after CR installation" {
